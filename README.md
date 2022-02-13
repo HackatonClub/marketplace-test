@@ -6,3 +6,5 @@ foo@bar:~$ pip install requirements.txt
 ```bash
 foo@bar:~$ python main.py
 ```
+
+https://cifra-store.herokuapp.com/docs
