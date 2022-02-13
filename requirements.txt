@@ -1,0 +1,6 @@
+python-dotenv 
+passlib
+bcrypt
+fastapi
+uvicorn
+asyncpg
