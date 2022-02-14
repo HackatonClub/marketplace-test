@@ -37,7 +37,8 @@ create table tags
 create table tags_product
 (
     product_id integer references product(id),
-    tag_id     integer references tags(id)
+    tag_id     integer references tags(id),
+    unique (product_id,tag_id)
 );
 
 create table product_photo
