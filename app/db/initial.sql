@@ -52,21 +52,24 @@ create table product_photo
 
 create table cart_product
 (
-    cart_id integer references cart(id),
-    product_id integer references product(id)
+    cart_id    integer references cart (id),
+    product_id integer references product (id),
+    unique (cart_id, product_id)
 );
 
 create table favourite
 (
-    customer_id integer references customer(id),
-    product_id  integer references product(id)
+    customer_id integer references customer (id),
+    product_id  integer references product (id),
+    unique (customer_id, product_id)
 );
 
 create table review
 (
-    product_id  integer references product(id),
-    customer_id integer references customer(id),
+    product_id  integer references product (id),
+    customer_id integer references customer (id),
     body        varchar(256),
-    rating      integer
+    rating      integer,
+    unique (product_id, customer_id)
 );
 
