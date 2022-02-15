@@ -58,21 +58,21 @@ class DB:
         return True
 
     @classmethod
-    async def remove_tag_from_product_by_id(cls,name:str,product_id:int):
+    async def remove_tag_from_product_by_id(cls,tag_name:str,product_id:int):
         sql = 'delete from tags_product where product_id = $1 and tag_id in (select id from tags where name = $2)'
         try:
-            await cls.con.execute(sql, product_id,name)
+            await cls.con.execute(sql, product_id,tag_name)
         except Exception as er:
             print(er)
             return False
         return True
 
     @classmethod
-    async def remove_tag(cls,name:str):
+    async def remove_tag(cls,tag_name:str):
         id = None
         sql = 'select id from tags where name = $1'
         try:
-            id = await cls.con.fetchrow(sql,name)
+            id = await cls.con.fetchrow(sql,tag_name)
         except Exception as er:
             print(er)
             return False
@@ -147,4 +147,16 @@ class DB:
 
     @classmethod
     async def remove_customer(cls,name:str):
+        pass
+
+    @classmethod
+    async def get_customers(cls):
+        pass
+
+    @classmethod
+    async def get_customer_id(cls,name):
+        pass
+
+    @classmethod
+    async def get_favourites(cls):
         pass
