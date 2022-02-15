@@ -1,13 +1,14 @@
 import os
 
 import asyncpg
-from app.settings import DATABASE_URL,DB_DATABASE,DB_HOST,DB_USER,DB_PASSWORD,DB_PORT
+from app.settings import DATABASE_URL, DB_DATABASE, DB_HOST, DB_USER, DB_PASSWORD, DB_PORT
 
-# TODO: add_tag_to_product_by_id возможно можно быстрее сделать
-# TODO: add_favourite в один запрос сделать
+
+# TODO: add_tag_to_product_by_id возможно можно быстрее сделать, а также сделать проверку на то, существует ли продукт
+# TODO: add_favourite в один запрос сделать, а также добавить проверку на неверного покупателя
 
 class DB:
-    con : asyncpg.connection.Connection = None
+    con: asyncpg.connection.Connection = None
 
     @classmethod
     async def connect_db(cls):
@@ -15,7 +16,8 @@ class DB:
             if DATABASE_URL:
                 cls.con = await asyncpg.connect(DATABASE_URL)
             else:
-                cls.con = await  asyncpg.connect(database=DB_DATABASE,user=DB_USER,password=DB_PASSWORD,host=DB_HOST,port=DB_PORT)
+                cls.con = await asyncpg.connect(database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD, host=DB_HOST,
+                                                port=DB_PORT)
         except Exception as er:
             print(er)
             cls.con = None
@@ -23,10 +25,14 @@ class DB:
         return True
 
     @classmethod
-    async def add_new_tag(cls,name: str):
+    async def disconnect_db(cls):
+        await cls.con.close()
+
+    @classmethod
+    async def add_new_tag(cls, name: str):
         sql = "insert into tags (name) values ($1) ;"
         try:
-            await cls.con.execute(sql, name )
+            await cls.con.execute(sql, name)
         except Exception as e:
             print(e)
             return False
@@ -37,13 +43,13 @@ class DB:
         id = None
         sql = 'insert into tags (name) values ($1) on conflict do nothing;'
         try:
-            await cls.con.execute(sql)
+            await cls.con.execute(sql, tag_name)
         except Exception as er:
             print(er)
             return False
         sql = 'select id from tags where name = $1;'
         try:
-            id = await cls.con.fetchrow(sql)['id']
+            id = (await cls.con.fetchrow(sql, tag_name))['id']
         except Exception as er:
             print(er)
             return False
@@ -72,7 +78,7 @@ class DB:
         id = None
         sql = 'select id from tags where name = $1'
         try:
-            id = await cls.con.fetchrow(sql,tag_name)
+            id = (await cls.con.fetchrow(sql, tag_name))['id']
         except Exception as er:
             print(er)
             return False
@@ -123,7 +129,7 @@ class DB:
         id = None
         sql = "select id from customer where name = $1"
         try:
-            id = await cls.con.fetchrow(sql,name)
+            id = (await cls.con.fetchrow(sql, name))['id']
         except Exception as e:
             print(e)
             return False
@@ -137,26 +143,10 @@ class DB:
 
     @classmethod
     async def remove_favourite(cls,name:str,product_id:int):
-        sql = 'delete from favourite where customer_id in (select id from customer where name = $1)'
+        sql = 'delete from favourite where product_id = $1 and customer_id in (select id from customer where name = $2)'
         try:
-            await cls.con.execute(sql)
+            await cls.con.execute(sql, product_id, name)
         except Exception as e:
             print(e)
             return False
         return True
-
-    @classmethod
-    async def remove_customer(cls,name:str):
-        pass
-
-    @classmethod
-    async def get_customers(cls):
-        pass
-
-    @classmethod
-    async def get_customer_id(cls,name):
-        pass
-
-    @classmethod
-    async def get_favourites(cls):
-        pass
