@@ -6,7 +6,7 @@ from app.formatter import format_records
 
 from app.db.db import DB
 
-tags_router = APIRouter()
+tags_router = APIRouter(tags=["Tags"])
 
 
 @tags_router.post('/tag')

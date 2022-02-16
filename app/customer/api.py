@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 
 from app.db.db import DB
 
-customer_router = APIRouter()
+customer_router = APIRouter(tags=["Customer"])
 
 
 @customer_router.post('/customer')
