@@ -6,6 +6,7 @@ from app.db.db import DB
 
 customer_router = APIRouter()
 
+# TODO: заменить хедеры на паф т.к. не принимают юникод
 
 @customer_router.post('/customer')
 async def add_customer(name: Optional[str] = Header(None, description='Имя покупателя')):

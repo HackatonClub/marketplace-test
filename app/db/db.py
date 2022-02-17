@@ -6,6 +6,7 @@ from app.settings import DATABASE_URL, DB_DATABASE, DB_HOST, DB_USER, DB_PASSWOR
 
 # TODO: add_tag_to_product_by_id возможно можно быстрее сделать, а также сделать проверку на то, существует ли продукт
 # TODO: add_favourite в один запрос сделать, а также добавить проверку на неверного покупателя
+# TODO: колда будевт функция добавить отзыв, не забыть добавить динамику в вычислении среднего рейтинга и колва отзывов в продукт
 
 class DB:
     con: asyncpg.connection.Connection = None
@@ -40,7 +41,7 @@ class DB:
 
     @classmethod
     async def add_tag_to_product_by_id(cls,tag_name:str,product_id:int):
-        id = None
+        customer_id = None
         sql = 'insert into tags (name) values ($1) on conflict do nothing;'
         try:
             await cls.con.execute(sql, tag_name)
@@ -49,15 +50,15 @@ class DB:
             return False
         sql = 'select id from tags where name = $1;'
         try:
-            id = (await cls.con.fetchrow(sql, tag_name))['id']
+            customer_id = (await cls.con.fetchrow(sql, tag_name))['id']
         except Exception as er:
             print(er)
             return False
-        if not id:
+        if not customer_id:
             return False
         sql = 'insert into tags_product(product_id, tag_id) values ($1,$2);'
         try:
-            await cls.con.execute(sql,product_id,id)
+            await cls.con.execute(sql, product_id, customer_id)
         except Exception as er:
             print(er)
             return False
@@ -75,22 +76,22 @@ class DB:
 
     @classmethod
     async def remove_tag(cls,tag_name:str):
-        id = None
+        customer_id = None
         sql = 'select id from tags where name = $1'
         try:
-            id = (await cls.con.fetchrow(sql, tag_name))['id']
+            customer_id = (await cls.con.fetchrow(sql, tag_name))['id']
         except Exception as er:
             print(er)
             return False
         sql = 'delete from tags_product where tag_id = $1'
         try:
-            await cls.con.execute(sql,id)
+            await cls.con.execute(sql, customer_id)
         except Exception as er:
             print(er)
             return False
         sql = 'delete from tags where id = $1'
         try:
-            await cls.con.execute(sql, id)
+            await cls.con.execute(sql, customer_id)
         except Exception as er:
             print(er)
             return False
@@ -116,9 +117,22 @@ class DB:
 
     @classmethod
     async def add_customer(cls,name:str):
+        customer_id = None
         sql = "insert into customer(name) values ($1)"
         try:
-            await cls.con.execute(sql,name)
+            await cls.con.execute(sql, name)
+        except Exception as e:
+            print(e)
+            return False
+        sql = "select id from customer where name = $1"
+        try:
+            customer_id = await cls.con.fetchrow(sql, name)['id']
+        except Exception as e:
+            print(e)
+            return False
+        sql = "insert into cart (customer_id) values ($1)"
+        try:
+            await cls.con.execute(sql, customer_id)
         except Exception as e:
             print(e)
             return False
@@ -126,27 +140,109 @@ class DB:
 
     @classmethod
     async def add_favourite(cls,name:str,product_id:int):
-        id = None
+        customer_id = None
         sql = "select id from customer where name = $1"
         try:
-            id = (await cls.con.fetchrow(sql, name))['id']
+            customer_id = (await cls.con.fetchrow(sql, name))['id']
         except Exception as e:
             print(e)
             return False
         sql = "insert into favourite(customer_id, product_id) VALUES ($1,$2)"
         try:
-            await cls.con.execute(sql, id,product_id)
+            await cls.con.execute(sql, customer_id, product_id)
         except Exception as e:
             print(e)
             return False
         return True
 
     @classmethod
-    async def remove_favourite(cls,name:str,product_id:int):
+    async def remove_favourite(cls, customer_name: str, product_id: int):
         sql = 'delete from favourite where product_id = $1 and customer_id in (select id from customer where name = $2)'
         try:
-            await cls.con.execute(sql, product_id, name)
+            await cls.con.execute(sql, product_id, customer_name)
         except Exception as e:
             print(e)
             return False
         return True
+
+    @classmethod
+    async def get_favourites(cls, customer_name: str):
+        customer_id = None
+        sql = 'select id from customer where name = $1;'
+        try:
+            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+        except Exception as er:
+            print(er)
+            return False
+        sql = 'select product_id from favourite where customer_id = $1;'
+        try:
+            await cls.con.execute(sql, customer_id)
+        except Exception as er:
+            print(er)
+            return False
+        return True
+
+    @classmethod
+    async def delete_customer(cls, customer_name: str):
+        customer_id = None
+        cart_id = None
+        sql = "select id from customer where name = $1;"
+        try:
+            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+        except Exception as e:
+            print(e)
+            return False
+        if not customer_id:
+            return False
+        sql = "delete from review where customer_id = $1;"
+        try:
+            await cls.con.execute(sql, customer_id)
+        except Exception as e:
+            print(e)
+            return False
+        sql = "select id from cart where customer_id = $1;"
+        try:
+            cart_id = await cls.con.fetchrow(sql, customer_id)['id']
+        except Exception as e:
+            print(e)
+            return False
+        sql = "delete from cart_product where cart_id = $1;"
+        try:
+            await cls.con.execute(sql, cart_id)
+        except Exception as e:
+            print(e)
+            return False
+        sql = "delete from cart where customer_id = $1;"
+        try:
+            await cls.con.execute(sql, customer_id)
+        except Exception as e:
+            print(e)
+            return False
+        sql = "delete from favourite where customer_id = $1;"
+        try:
+            await cls.con.execute(sql, customer_id)
+        except Exception as e:
+            print(e)
+            return False
+        return True
+
+    @classmethod
+    async def get_all_customers(cls):
+        sql = 'select name from customer;'
+        try:
+            return await cls.con.fetch(sql)
+        except Exception as er:
+            print(er)
+            return False
+
+    @classmethod
+    async def add_cart(cls, customer_name: str, product_id: int):
+        pass
+
+    @classmethod
+    async def delete_product_from_cart(cls, customer_name: str, product_id: int):
+        pass
+
+    @classmethod
+    async def get_cart_products(cls, customer_name: str):
+        pass
