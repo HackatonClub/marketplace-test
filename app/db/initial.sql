@@ -1,9 +1,10 @@
 create table customer
 (
-    id   serial
+    id       serial
         constraint customer_pk
             primary key,
-    name varchar(256) not null
+    name     varchar(256) not null,
+    password text         not null
 );
 
 create table cart
