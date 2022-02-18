@@ -1,14 +1,20 @@
 from typing import Optional
 from fastapi import APIRouter, status, HTTPException, Header
 from fastapi.responses import JSONResponse
+from app.model import User
+from fastapi.param_functions import Depends
+from app.oauth2 import get_current_user
 
 from app.db.db import DB
 
 customer_router = APIRouter(tags=["Customer"])
 
-
+# current_user: User = Depends(get_current_user)
+#
+# Пример, проверки
+#
 @customer_router.post('/customer')
-async def add_customer(name: Optional[str] = Header(None, description='Имя покупателя')):
+async def add_customer(name: Optional[str] = Header(None, description='Имя покупателя'),current_user: User = Depends(get_current_user)):
     if not await DB.add_customer(name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

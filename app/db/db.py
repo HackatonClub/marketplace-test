@@ -1,5 +1,5 @@
 import os
-
+from app.model import User
 import asyncpg
 from app.settings import DATABASE_URL, DB_DATABASE, DB_HOST, DB_USER, DB_PASSWORD, DB_PORT
 
@@ -150,3 +150,18 @@ class DB:
             print(e)
             return False
         return True
+#customer(name)
+    @classmethod
+    async def check_login(cls, login: str):
+        userlogin = await cls.con.fetchrow(f"""
+                    SELECT id FROM customer WHERE name = '{login}';
+        """)
+        return userlogin
+
+    @classmethod
+    async def create_user(cls, User: User):
+
+        await cls.con.execute(f'''
+              INSERT INTO customer (name,password) VALUES ('{User.login}','{User.password}');
+        ''')
+

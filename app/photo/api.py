@@ -11,5 +11,6 @@ photo_router = APIRouter(tags=["Photo"])
 
 #@photo_router.post('/product/photo')
 #async def add_photo(product_id: Optional[int] = Header(None,description='Id продукта'),
+#                                                                           )
 
    
