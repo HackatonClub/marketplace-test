@@ -3,7 +3,7 @@ from fastapi import APIRouter, status, HTTPException, Header
 from fastapi.responses import JSONResponse
 from app.model import User
 from fastapi.param_functions import Depends
-from app.oauth2 import get_current_user
+from app.auth.oauth2 import get_current_user
 
 from app.db.db import DB
 
