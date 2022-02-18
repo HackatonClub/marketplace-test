@@ -8,6 +8,7 @@ from app.db.db import DB
 
 tags_router = APIRouter(tags=["Tags"])
 
+# TODO: заменить хедеры на паф т.к. не принимают юникод
 
 @tags_router.post('/tag')
 async def add_tag(tag_name: Optional[str] = Header(None, description='Имя тега')):

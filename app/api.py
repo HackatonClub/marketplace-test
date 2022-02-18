@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from app.tags.api import tags_router
 from app.customer.registr import registr_router
 from app.customer.api import customer_router
+from app.cart.api import cart_router
 from app.db.db import DB
 
 app = FastAPI(
@@ -24,4 +25,5 @@ async def shutdown():
 
 app.include_router(tags_router)
 app.include_router(customer_router)
+app.include_router(cart_router)
 app.include_router(registr_router)
