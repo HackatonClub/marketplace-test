@@ -1,9 +1,10 @@
 create table customer
 (
-    id   serial
+    id       serial
         constraint customer_pk
             primary key,
-    name varchar(256) not null
+    name     varchar(256) not null unique,
+    password text         not null
 );
 
 create table product
@@ -20,10 +21,11 @@ create table product
 
 create table tags
 (
-    id   serial
+    id       serial
         constraint tags_pk
             primary key,
-    name varchar(256) not null
+    name     varchar(256) not null,
+    password text
         unique
 );
 create table tags_product

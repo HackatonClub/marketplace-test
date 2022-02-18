@@ -12,8 +12,9 @@ customer_router = APIRouter()
 # TODO: заменить хедеры на паф т.к. не принимают юникод
 
 @customer_router.post('/customer')
-async def add_customer(name: Optional[str] = Header(None, description='Имя покупателя')):
-    if not await DB.add_customer(name):
+async def add_customer(name: Optional[str] = Header(None, description='Имя покупателя'),
+                       password: Optional[str] = Header(None, description='Пароль покупателя')):
+    if not await DB.add_customer(name, password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Покупатель с таким именем существует'

@@ -116,10 +116,10 @@ class DB:
             return False
 
     @classmethod
-    async def add_customer(cls,name:str):
-        sql = "insert into customer(name) values ($1)"
+    async def add_customer(cls, name: str, password: str):
+        sql = "insert into customer(name,password) values ($1,$2)"
         try:
-            await cls.con.execute(sql, name)
+            await cls.con.execute(sql, name, password)
         except Exception as e:
             print(e)
             return False
@@ -157,24 +157,23 @@ class DB:
         customer_id = None
         sql = 'select id from customer where name = $1;'
         try:
-            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+            customer_id = (await cls.con.fetchrow(sql, customer_name))['id']
         except Exception as er:
             print(er)
             return False
         sql = 'select product_id from favourite where customer_id = $1;'
         try:
-            await cls.con.execute(sql, customer_id)
+            return await cls.con.fetch(sql, customer_id)
         except Exception as er:
             print(er)
             return False
-        return True
 
     @classmethod
     async def delete_customer(cls, customer_name: str):
         customer_id = None
         sql = "select id from customer where name = $1;"
         try:
-            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+            customer_id = (await cls.con.fetchrow(sql, customer_name))['id']
         except Exception as e:
             print(e)
             return False
@@ -198,6 +197,12 @@ class DB:
         except Exception as e:
             print(e)
             return False
+        sql = "delete from customer where id = $1;"
+        try:
+            await cls.con.execute(sql, customer_id)
+        except Exception as e:
+            print(e)
+            return False
         return True
 
     @classmethod
@@ -214,7 +219,7 @@ class DB:
         customer_id = None
         sql = "select id from customer where name = $1;"
         try:
-            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+            customer_id = (await cls.con.fetchrow(sql, customer_name))['id']
         except Exception as e:
             print(e)
             return False
@@ -233,7 +238,7 @@ class DB:
         customer_id = None
         sql = "select id from customer where name = $1;"
         try:
-            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+            customer_id = (await cls.con.fetchrow(sql, customer_name))['id']
         except Exception as e:
             print(e)
             return False
@@ -252,7 +257,7 @@ class DB:
         customer_id = None
         sql = "select id from customer where name = $1;"
         try:
-            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+            customer_id = (await cls.con.fetchrow(sql, customer_name))['id']
         except Exception as e:
             print(e)
             return False
@@ -271,13 +276,13 @@ class DB:
         customer_id = None
         sql = "select id from customer where name = $1;"
         try:
-            customer_id = await cls.con.fetchrow(sql, customer_name)['id']
+            customer_id = (await cls.con.fetchrow(sql, customer_name))['id']
         except Exception as e:
             print(e)
             return False
         if not customer_id:
             return False
-        sql = 'select p.id,p.name,cart_product.product_num from cart_product join product p on p.id = cart_product.product_id where customer_id = $1'
+        sql = 'select p.id as product_id,p.name,cart_product.product_num from cart_product join product p on p.id = cart_product.product_id where customer_id = $1'
         try:
             return await cls.con.fetch(sql, customer_id)
         except Exception as er:
