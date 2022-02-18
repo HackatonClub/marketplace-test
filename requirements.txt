@@ -1,6 +1,13 @@
-python-dotenv 
+
 passlib
 bcrypt
 fastapi
 uvicorn
 asyncpg
+python-jose
+python-multipart
+PyJWT==1.7.1
+python-decouple==3.3
+psycopg2
+jinja2==2.11.2
+python-dotenv 
