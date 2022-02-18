@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, status, HTTPException, Header
 from fastapi.responses import JSONResponse
 
-from app.formatter import format_records
+from app.utils.formatter import format_records
 
 from app.db.db import DB
 

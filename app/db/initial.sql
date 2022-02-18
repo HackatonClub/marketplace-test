@@ -3,17 +3,10 @@ create table customer
     id       serial
         constraint customer_pk
             primary key,
-    name     varchar(256) not null,
+    name     varchar(256) not null unique,
     password text         not null
 );
 
-create table cart
-(
-    id          serial
-        constraint cart_pk
-            primary key,
-    customer_id integer references customer(id)
-);
 
 create table product
 (
@@ -53,9 +46,10 @@ create table product_photo
 
 create table cart_product
 (
-    cart_id    integer references cart (id),
-    product_id integer references product (id),
-    unique (cart_id, product_id)
+    customer_id integer references customer (id),
+    product_id  integer references product (id),
+    product_num integer not null,
+    unique (customer_id, product_id)
 );
 
 create table favourite
