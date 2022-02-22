@@ -1,8 +1,8 @@
 from typing import Optional, List
-import os
+
 import pathlib
 import app.queries.photo as photo
-from fastapi import APIRouter, File, Path, UploadFile, Form, Query
+from fastapi import APIRouter, File, Path, UploadFile, Query
 from fastapi.responses import FileResponse
 
 from app.db.db import DB as db
@@ -10,6 +10,8 @@ from app.db.db import DB as db
 
 photo_router = APIRouter(tags=["Photo"])
 
+
+# :TODO папку убрать создания
 
 @photo_router.post("/product/{product_id}/photos")
 async def create_files(product_id: int = Path(..., title='ID продукта', gt=0),
@@ -21,9 +23,8 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
     # Получение пути каталога , куда сохранять
     folder_path = pathlib.Path(__file__).parent.resolve()
     # + assets/{product_id}
-    upload_path = folder_path.joinpath(pathlib.Path(f"assets/{product_id}"))
-    if not pathlib.Path.is_dir(upload_path):
-        pathlib.Path.mkdir(upload_path)
+    upload_path = folder_path.joinpath(pathlib.Path(f"assets"))
+    
 
     # Загрузка
     for file in files:
@@ -44,7 +45,7 @@ async def get_product_photo_by_name( product_id: int = Query(None, description='
 
     folder_path = pathlib.Path(__file__).parent.resolve()
     # проверка на существование файла 
-    file_path = folder_path.joinpath( pathlib.Path(f"assets/{product_id}/{image_name}"))
+    file_path = folder_path.joinpath( pathlib.Path(f"assets/{image_name}"))
 
     if not pathlib.Path.is_file(file_path):
          return "Файла не существует"
@@ -54,7 +55,6 @@ async def get_product_photo_by_name( product_id: int = Query(None, description='
 
 @photo_router.get('/product/{product_id}/photos')
 async def get_product_photo_all_filename(product_id: int = Query(None, description='Id продукта')): 
-    
     
     return await photo.get_all_name_photo(product_id)
 
@@ -70,10 +70,10 @@ async def delete_product_photo (product_id: int = Query(None, description='Id п
         await photo.delete_photo_by_name(product_id,image_name)
 
         folder_path = pathlib.Path(__file__).parent.resolve()
-        file_path = folder_path.joinpath( pathlib.Path(f"assets/{product_id}/{image_name}"))
+        file_path = folder_path.joinpath( pathlib.Path(f"assets/{image_name}"))
 
         if not pathlib.Path.is_file(file_path):
-         return "Файла не существует"
+             return "Файла не существует"
 
         pathlib.Path.unlink(file_path)
 

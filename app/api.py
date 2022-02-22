@@ -7,6 +7,7 @@ from app.routers.customer import customer_router
 from app.routers.cart import cart_router
 from app.routers.favourite import favourite_router
 from app.routers.photo import photo_router
+from app.routers.product import product_router
 from app.db.db import DB
 
 app = FastAPI(
@@ -31,3 +32,4 @@ app.include_router(cart_router)
 app.include_router(registr_router)
 app.include_router(favourite_router)
 app.include_router(photo_router)
+app.include_router(product_router)
