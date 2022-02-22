@@ -11,3 +11,4 @@ python-decouple==3.3
 psycopg2
 jinja2==2.11.2
 python-dotenv 
+aiofiles 
