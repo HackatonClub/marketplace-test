@@ -16,8 +16,7 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
                        files: List[UploadFile] = File(...)):
 
     # Проверку на существование продукта
-    if await photo.check_product(product_id):
-        return "Данного продукта не существует"
+    
 
     # Получение пути каталога , куда сохранять
     folder_path = pathlib.Path(__file__).parent.resolve()
@@ -31,7 +30,7 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
         photo_path = upload_path.joinpath(pathlib.Path(f"{file.filename}"))
         with open(photo_path, "wb+") as file_object:
             file_object.write(file.file.read())
-        await photo.add_photo(product_id, f"assets/{product_id}/{file.filename}")
+        await photo.add_photo(product_id, f"{file.filename}")
     # Внесение каталога в бд
     
 
@@ -40,11 +39,40 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
 #
 # !!!!!! Добавить проверку на то что существует ли файл
 @photo_router.get('/product/{product_id}/photo/{image_name}')
-async def get_product_photo( product_id: str = Query(None, description='Id продукта'), 
+async def get_product_photo_by_name( product_id: int = Query(None, description='Id продукта'), 
                                 image_name: str = Query(None, description='Имя файла')):
+
     folder_path = pathlib.Path(__file__).parent.resolve()
-    file_path = folder_path.joinpath(
-        pathlib.Path(f"assets/{product_id}/{image_name}"))
+    # проверка на существование файла 
+    file_path = folder_path.joinpath( pathlib.Path(f"assets/{product_id}/{image_name}"))
+
+    if not pathlib.Path.is_file(file_path):
+         return "Файла не существует"
     #path_files = pathlib.Path(upload_path).glob('*.*')
 
     return FileResponse(file_path)
+
+@photo_router.get('/product/{product_id}/photos')
+async def get_product_photo_all_filename(product_id: int = Query(None, description='Id продукта')): 
+    
+    
+    return await photo.get_all_name_photo(product_id)
+
+
+
+
+
+
+@photo_router.delete('/product/{product_id}/photo')
+async def delete_product_photo (product_id: int = Query(None, description='Id продукта'), 
+                                   image_name: str = Query(None, description='Имя файла')):
+
+        await photo.delete_photo_by_name(product_id,image_name)
+
+        folder_path = pathlib.Path(__file__).parent.resolve()
+        file_path = folder_path.joinpath( pathlib.Path(f"assets/{product_id}/{image_name}"))
+        
+        pathlib.Path.unlink(file_path)
+
+        return " Файл удален"
+
