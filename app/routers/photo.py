@@ -71,7 +71,10 @@ async def delete_product_photo (product_id: int = Query(None, description='Id п
 
         folder_path = pathlib.Path(__file__).parent.resolve()
         file_path = folder_path.joinpath( pathlib.Path(f"assets/{product_id}/{image_name}"))
-        
+
+        if not pathlib.Path.is_file(file_path):
+         return "Файла не существует"
+
         pathlib.Path.unlink(file_path)
 
         return " Файл удален"
