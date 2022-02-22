@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 import app.queries.customer as customer
@@ -23,8 +23,8 @@ async def add_customer(temp: CutomerNew):
 
 
 @customer_router.get('/customer')
-async def get_customers():
-    customers = await customer.get_all_customers()
+async def get_customers(page: int = Query(1, description='Номер страницы', gt=0)):
+    customers = await customer.get_all_customers(page)
     customers = format_records(customers)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'customers': customers

@@ -1,5 +1,5 @@
 from app.db.db import DB
-
+from app.settings import ITEMS_PER_PAGE
 
 async def add_customer(name: str, password: str):
     sql = "insert into customer(name,password) values ($1,$2)"
@@ -22,6 +22,6 @@ async def delete_customer(customer_name: str):
     return await DB.execute(sql, customer_id)
 
 
-async def get_all_customers():
-    sql = 'select name from customer;'
-    return await DB.fetch(sql)
+async def get_all_customers(page: int):
+    sql = 'select name from customer join (select id from customer order by id limit $1 offset $2) as b on b.id = customer.id;'
+    return await DB.fetch(sql, ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
