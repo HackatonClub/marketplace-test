@@ -1,5 +1,5 @@
-import os
 import asyncpg
+
 from app.settings import DATABASE_URL, DB_DATABASE, DB_HOST, DB_USER, DB_PASSWORD, DB_PORT
 
 
@@ -28,4 +28,27 @@ class DB:
     async def disconnect_db(cls):
         await cls.con.close()
 
+    @classmethod
+    async def execute(cls, sql, *args):
+        try:
+            await DB.con.execute(sql, *args)
+        except Exception as er:
+            print(er)
+            return False
+        return True
 
+    @classmethod
+    async def fetch(cls, sql, *args):
+        try:
+            return await DB.con.fetch(sql, *args)
+        except Exception as er:
+            print(er)
+            return False
+
+    @classmethod
+    async def fetchrow(cls, sql, *args):
+        try:
+            return await DB.con.fetchrow(sql, *args)
+        except Exception as er:
+            print(er)
+            return False
