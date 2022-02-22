@@ -55,3 +55,10 @@ class Favourite(BaseModel):
 
 class FavouriteOfUser(BaseModel):
     customer_name: str = Field(None, description='Имя покупателя')
+
+
+class Review(BaseModel):
+    product_id: int = Field(None, description='ID продукта', gt=0)
+    customer_name: str = Field(None, description='Имя покупателя')
+    body: str = Field(None, description='Тело отзыва')
+    rating: int = Field(None, description='Рейтинг', ge=1, le=5)

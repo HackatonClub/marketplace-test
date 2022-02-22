@@ -52,5 +52,5 @@ async def get_customers(temp: Customer):
     products = await cart.get_cart_products(temp.name)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
-        'customers': products
+        'products': products
     })
