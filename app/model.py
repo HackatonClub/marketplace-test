@@ -61,3 +61,9 @@ class ProductAdd(BaseModel):
     discription : str = Field(None, description='Описание продукта')
     price : int = Field(None, description='Цена продукта',gt=0)
 
+
+class Review(BaseModel):
+    product_id: int = Field(None, description='ID продукта', gt=0)
+    customer_name: str = Field(None, description='Имя покупателя')
+    body: str = Field(None, description='Тело отзыва')
+    rating: int = Field(None, description='Рейтинг', ge=1, le=5)
