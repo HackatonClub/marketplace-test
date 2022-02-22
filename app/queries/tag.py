@@ -10,9 +10,10 @@ async def add_tag_to_product_by_id(tag_name: str, product_id: int):
     sql = 'insert into tags (name) values ($1) on conflict do nothing;'
     await DB.execute(sql, tag_name)
     sql = 'select id from tags where name = $1;'
-    customer_id = (await DB.fetchrow(sql, tag_name))['id']
+    customer_id = (await DB.fetchrow(sql, tag_name))
     if not customer_id:
         return False
+    customer_id = customer_id['id']
     sql = 'insert into tags_product(product_id, tag_id) values ($1,$2);'
     return await DB.execute(sql, product_id, customer_id)
 
@@ -24,7 +25,10 @@ async def remove_tag_from_product_by_id(tag_name: str, product_id: int):
 
 async def remove_tag(tag_name: str):
     sql = 'select id from tags where name = $1'
-    customer_id = (await DB.fetchrow(sql, tag_name))['id']
+    customer_id = (await DB.fetchrow(sql, tag_name))
+    if not customer_id:
+        return False
+    customer_id = customer_id['id']
     sql = 'delete from tags_product where tag_id = $1'
     await DB.execute(sql, customer_id)
     sql = 'delete from tags where id = $1'

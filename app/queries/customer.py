@@ -8,9 +8,10 @@ async def add_customer(name: str, password: str):
 
 async def delete_customer(customer_name: str):
     sql = "select id from customer where name = $1;"
-    customer_id = (await DB.fetchrow(sql, customer_name))['id']
+    customer_id = (await DB.fetchrow(sql, customer_name))
     if not customer_id:
         return False
+    customer_id = customer_id['id']
     sql = "delete from review where customer_id = $1;"
     await DB.execute(sql, customer_id)
     sql = "delete from cart_product where customer_id = $1;"
