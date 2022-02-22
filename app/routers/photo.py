@@ -11,7 +11,7 @@ from app.db.db import DB as db
 photo_router = APIRouter(tags=["Photo"])
 
 
-# :TODO папку убрать создания
+
 
 @photo_router.post("/product/{product_id}/photos")
 async def create_files(product_id: int = Path(..., title='ID продукта', gt=0),
@@ -37,8 +37,8 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
 
     return "Files succeful added"
 
-#
-# !!!!!! Добавить проверку на то что существует ли файл
+
+
 @photo_router.get('/product/{product_id}/photo/{image_name}')
 async def get_product_photo_by_name( product_id: int = Query(None, description='Id продукта'), 
                                 image_name: str = Query(None, description='Имя файла')):
@@ -49,7 +49,7 @@ async def get_product_photo_by_name( product_id: int = Query(None, description='
 
     if not pathlib.Path.is_file(file_path):
          return "Файла не существует"
-    #path_files = pathlib.Path(upload_path).glob('*.*')
+    
 
     return FileResponse(file_path)
 
