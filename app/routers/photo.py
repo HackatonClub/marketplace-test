@@ -2,7 +2,7 @@ from typing import Optional, List
 
 import pathlib
 import app.queries.photo as photo
-from fastapi import APIRouter, File, Path, UploadFile, Query
+from fastapi import APIRouter, File, HTTPException, Path, UploadFile, Query,status
 from fastapi.responses import FileResponse
 
 from app.db.db import DB as db
@@ -31,7 +31,11 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
         photo_path = upload_path.joinpath(pathlib.Path(f"{file.filename}"))
         with open(photo_path, "wb+") as file_object:
             file_object.write(file.file.read())
-        await photo.add_photo(product_id, f"{file.filename}")
+        if not await photo.add_photo(product_id, f"{file.filename}"):
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Такого продукта с таким id не существует'
+        )
     # Внесение каталога в бд
     
 
