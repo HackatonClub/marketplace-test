@@ -30,6 +30,9 @@ create table tags
 );
 create table tags_product
 (
+    id         serial
+        constraint tags_product_pk
+            primary key,
     product_id integer references product (id) on delete cascade,
     tag_id     integer references tags (id) on delete cascade,
     unique (product_id, tag_id)
@@ -46,6 +49,9 @@ create table product_photo
 
 create table cart_product
 (
+    id          serial
+        constraint cart_product_pk
+            primary key,
     customer_id integer references customer (id) on delete cascade,
     product_id  integer references product (id) on delete cascade,
     product_num integer not null,
@@ -54,6 +60,9 @@ create table cart_product
 
 create table favourite
 (
+    id          serial
+        constraint favourite_pk
+            primary key,
     customer_id integer references customer (id) on delete cascade,
     product_id  integer references product (id) on delete cascade,
     unique (customer_id, product_id)
@@ -61,6 +70,9 @@ create table favourite
 
 create table review
 (
+    id          serial
+        constraint review_pk
+            primary key,
     product_id  integer references product (id) on delete cascade,
     customer_id integer references customer (id) on delete cascade,
     body        varchar(256),
