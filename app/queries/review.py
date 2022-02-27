@@ -1,5 +1,5 @@
 from app.db.db import DB
-
+from app.settings import ITEMS_PER_PAGE
 
 # TODO: Добавить динамику в добавление и удаление, но тогда код станет менее стабильным
 
@@ -51,6 +51,6 @@ async def update_review_to_product(customer_name: str, product_id: int, body: st
     return await DB.execute(sql, temp['sum'] / temp['count'], temp['count'], product_id)
 
 
-async def get_reviews_to_product_ascending(product_id: int):
-    sql = "select r.body, r.rating, c.name from review as r join customer c on r.customer_id = c.id where product_id = $1 order by r.rating desc"
-    return await DB.fetch(sql, product_id)
+async def get_reviews_to_product(product_id: int, previous_id: int):
+    sql = "select r.body, r.rating, c.name,r.id as previous_id from review as r join customer c on r.customer_id = c.id where product_id = $1 and r.id > $2 limit $3"
+    return await DB.fetch(sql, product_id, previous_id, ITEMS_PER_PAGE)

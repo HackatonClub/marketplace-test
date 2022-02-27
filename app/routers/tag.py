@@ -62,8 +62,8 @@ async def remove_tag_from_product(temp_tag: Tag, product_id: int = Path(..., tit
 
 
 @tags_router.get('/tag')
-async def get_all_tags():
-    tags = await tag.get_all_tags()
+async def get_all_tags(previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+    tags = await tag.get_all_tags(previous_id)
     tags = format_records(tags)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'tags': tags
@@ -71,8 +71,9 @@ async def get_all_tags():
 
 
 @tags_router.get('/product/{product_id}/tag')
-async def get_tags_of_product(product_id: int = Path(..., title='ID продукта', gt=0)):
-    tags = await tag.get_tags_of_product_by_id(product_id)
+async def get_tags_of_product(product_id: int = Path(..., title='ID продукта', gt=0),
+                              previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+    tags = await tag.get_tags_of_product_by_id(product_id, previous_id)
     tags = format_records(tags)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'tags': tags
@@ -80,8 +81,9 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
 
 
 @tags_router.get('/search/tag')
-async def get_products_by_tags(tags: List[str] = Query(None)):
-    products = await tag.get_products_by_tags(tags)
+async def get_products_by_tags(tags: List[str] = Query(None),
+                               previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+    products = await tag.get_products_by_tags(tags, previous_id)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'products': products

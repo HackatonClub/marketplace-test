@@ -33,8 +33,9 @@ async def delete_favourite(temp: Favourite):
 
 
 @favourite_router.get('/customer/favourite')
-async def get_customer_favourite(customer_name: str = Query(None, description='Имя покупателя')):
-    favourites = await favourite.get_favourites(customer_name)
+async def get_customer_favourite(customer_name: str = Query(None, description='Имя покупателя'),
+                                 previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+    favourites = await favourite.get_favourites(customer_name, previous_id)
     favourites = format_records(favourites)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'favourite': favourites

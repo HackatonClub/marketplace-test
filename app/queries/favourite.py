@@ -1,5 +1,5 @@
 from app.db.db import DB
-
+from app.settings import ITEMS_PER_PAGE
 
 async def add_favourite(name: str, product_id: int):
     sql = "select id from customer where name = $1"
@@ -16,11 +16,11 @@ async def remove_favourite(customer_name: str, product_id: int):
     return await DB.execute(sql, product_id, customer_name)
 
 
-async def get_favourites(customer_name: str):
+async def get_favourites(customer_name: str, previous_id: int):
     sql = 'select id from customer where name = $1;'
     customer_id = (await DB.fetchrow(sql, customer_name))
     if not customer_id:
         return False
     customer_id = customer_id['id']
-    sql = 'select product_id from favourite where customer_id = $1;'
-    return await DB.fetch(sql, customer_id)
+    sql = 'select product_id,id as previous_id from favourite where customer_id = $1 and id > $2 limit $3;'
+    return await DB.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)

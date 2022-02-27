@@ -22,6 +22,6 @@ async def delete_customer(customer_name: str):
     return await DB.execute(sql, customer_id)
 
 
-async def get_all_customers(page: int):
-    sql = 'select name from customer join (select id from customer order by id limit $1 offset $2) as b on b.id = customer.id;'
-    return await DB.fetch(sql, ITEMS_PER_PAGE, page * ITEMS_PER_PAGE)
+async def get_all_customers(previous_id: int):
+    sql = 'select name,id as previous_id from customer where id > $1 limit $2'
+    return await DB.fetch(sql, previous_id, ITEMS_PER_PAGE)

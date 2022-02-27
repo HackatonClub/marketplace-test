@@ -23,8 +23,8 @@ async def add_customer(temp: CutomerNew):
 
 
 @customer_router.get('/customer')
-async def get_customers(page: int = Query(1, description='Номер страницы', gt=0)):
-    customers = await customer.get_all_customers(page)
+async def get_customers(previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+    customers = await customer.get_all_customers(previous_id)
     customers = format_records(customers)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'customers': customers

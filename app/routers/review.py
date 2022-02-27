@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, HTTPException, Path
+from fastapi import APIRouter, status, HTTPException, Path, Query
 from fastapi.responses import JSONResponse
 
 import app.queries.review as review
@@ -47,8 +47,9 @@ async def delete_favourite(temp_product: Product, temp_customer: Customer):
 
 
 @review_router.get('/product/{product_id}/reviews')
-async def get_reviews(product_id: int = Path(..., title='ID продукта', gt=0)):
-    reviews = await review.get_reviews_to_product_ascending(product_id)
+async def get_reviews(product_id: int = Path(..., title='ID продукта', gt=0),
+                      previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+    reviews = await review.get_reviews_to_product(product_id, previous_id)
     reviews = format_records(reviews)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'reviews': reviews
