@@ -9,7 +9,6 @@ from app.utils.formatter import format_records
 customer_router = APIRouter(tags=["Customer"])
 
 
-# TODO: заменить хедеры на паф т.к. не принимают юникод
 
 @customer_router.post('/customer')
 async def add_customer(temp: CutomerNew):

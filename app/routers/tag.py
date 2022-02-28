@@ -11,7 +11,6 @@ from app.utils.formatter import format_records
 tags_router = APIRouter(tags=["Tags"])
 
 
-# TODO: заменить хедеры на паф т.к. не принимают юникод
 # TODO: можно создавать пустой тэг, не знаю это баг или фича
 
 @tags_router.post('/tag')

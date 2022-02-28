@@ -9,9 +9,6 @@ from app.utils.formatter import format_records
 cart_router = APIRouter(tags=["Cart"])
 
 
-# TODO: заменить хедеры на паф т.к. не принимают юникод
-# TODO: добавить проверку gt в product_num
-
 @cart_router.post('/customer/cart')
 async def add_product_to_cart(temp: Cart):
     if not await cart.add_product_to_cart(temp.customer_name, temp.product_id, temp.product_num):

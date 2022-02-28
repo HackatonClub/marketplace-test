@@ -1,6 +1,6 @@
 from app.db.db import DB
 from app.settings import ITEMS_PER_PAGE
-from app.utils.formatter import get_col_values
+from app.utils.extracter import get_col_values
 
 async def add_new_tag(name: str):
     sql = "insert into tags (name) values ($1) ;"
