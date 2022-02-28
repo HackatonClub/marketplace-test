@@ -5,7 +5,7 @@ from app.settings import ITEMS_PER_PAGE
 
 async def add_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
     sql = "select id from customer where name = $1"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
@@ -21,7 +21,7 @@ async def add_review_to_product(customer_name: str, product_id: int, body: str, 
 
 async def delete_review_from_product(customer_name: str, product_id: int):
     sql = "select id from customer where name = $1"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
@@ -37,7 +37,7 @@ async def delete_review_from_product(customer_name: str, product_id: int):
 
 async def update_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
     sql = "select id from customer where name = $1"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']

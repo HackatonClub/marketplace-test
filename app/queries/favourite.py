@@ -3,7 +3,7 @@ from app.settings import ITEMS_PER_PAGE
 
 async def add_favourite(name: str, product_id: int):
     sql = "select id from customer where name = $1"
-    customer_id = (await DB.fetchrow(sql, name))
+    customer_id = await DB.fetchrow(sql, name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
@@ -18,7 +18,7 @@ async def remove_favourite(customer_name: str, product_id: int):
 
 async def get_favourites(customer_name: str, previous_id: int):
     sql = 'select id from customer where name = $1;'
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']

@@ -3,7 +3,7 @@ from app.settings import ITEMS_PER_PAGE
 
 async def add_product_to_cart(customer_name: str, product_id: int, product_num: int):
     sql = "select id from customer where name = $1;"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
@@ -13,7 +13,7 @@ async def add_product_to_cart(customer_name: str, product_id: int, product_num: 
 
 async def update_product_in_cart(customer_name: str, product_id: int, product_num: int):
     sql = "select id from customer where name = $1;"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
@@ -23,7 +23,7 @@ async def update_product_in_cart(customer_name: str, product_id: int, product_nu
 
 async def delete_product_from_cart(customer_name: str, product_id: int):
     sql = "select id from customer where name = $1;"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
@@ -33,7 +33,7 @@ async def delete_product_from_cart(customer_name: str, product_id: int):
 
 async def get_cart_products(customer_name: str, previous_id: int):
     sql = "select id from customer where name = $1;"
-    customer_id = (await DB.fetchrow(sql, customer_name))
+    customer_id = await DB.fetchrow(sql, customer_name)
     if not customer_id:
         return False
     customer_id = customer_id['id']
