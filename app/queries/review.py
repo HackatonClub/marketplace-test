@@ -1,3 +1,5 @@
+from fastapi import status, HTTPException
+
 from app.db.db import DB
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
@@ -8,7 +10,10 @@ from app.settings import ITEMS_PER_PAGE
 async def add_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        return False
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Нет такого покупателя'
+        )
     sql = "insert into review(product_id, customer_id, body, rating) VALUES ($1,$2,$3,$4)"
     await DB.execute(sql, product_id, customer_id, body, rating)
     return update_product_dynamic_data(product_id)
@@ -17,7 +22,10 @@ async def add_review_to_product(customer_name: str, product_id: int, body: str, 
 async def delete_review_from_product(customer_name: str, product_id: int):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        return False
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Нет такого покупателя'
+        )
     sql = "delete from review where customer_id = $1 and product_id = $2"
     await DB.execute(sql, customer_id, product_id)
     return update_product_dynamic_data(product_id)
@@ -26,7 +34,10 @@ async def delete_review_from_product(customer_name: str, product_id: int):
 async def update_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        return False
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Нет такого покупателя'
+        )
     sql = "update review set body = $1, rating = $2 where customer_id = $3 and product_id = $4"
     await DB.execute(sql, body, rating, customer_id, product_id)
     return await update_product_dynamic_data(product_id)
