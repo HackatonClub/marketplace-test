@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Query
 from fastapi.responses import JSONResponse
 
-import app.queries.favourite as favourite
+import app.queries.favourite as favourite_queries
 from app.model import Favourite
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
@@ -10,8 +10,8 @@ favourite_router = APIRouter(tags=["Favourite"])
 
 
 @favourite_router.post('/customer/favourite')
-async def add_favourite(temp: Favourite):
-    if not await favourite.add_favourite(temp.customer_name, temp.product_id):
+async def add_favourite(favourite: Favourite):
+    if not await favourite_queries.add_favourite(favourite.customer_name, favourite.product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Нет такого покупателя и/или продукта, или продукт уже добавлен в избранное'
@@ -22,8 +22,8 @@ async def add_favourite(temp: Favourite):
 
 
 @favourite_router.delete('/customer/favourite')
-async def delete_favourite(temp: Favourite):
-    if not await favourite.remove_favourite(temp.customer_name, temp.product_id):
+async def delete_favourite(favourite: Favourite):
+    if not await favourite_queries.remove_favourite(favourite.customer_name, favourite.product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Уже удален из избранного'
@@ -36,7 +36,7 @@ async def delete_favourite(temp: Favourite):
 @favourite_router.get('/customer/favourite')
 async def get_customer_favourite(customer_name: str = Query(None, description='Имя покупателя'),
                                  previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
-    favourites = await favourite.get_favourites(customer_name, previous_id)
+    favourites = await favourite_queries.get_favourites(customer_name, previous_id)
     previous_id = get_previous_id(favourites)
     favourites = format_records(favourites)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
