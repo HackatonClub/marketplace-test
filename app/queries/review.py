@@ -42,7 +42,9 @@ async def update_product_dynamic_data(product_id: int):
     if temp['sum'] is None:
         temp = {'sum': 0, 'count': 1}
     sql = "update product set num_reviews = $2, avg_rating = $1 where id = $3"
-    return await DB.execute(sql, temp['sum'] / temp['count'], temp['count'], product_id)
+    num_reviews = temp['count']
+    avg_rating = temp['sum'] / temp['count']
+    return await DB.execute(sql, avg_rating, num_reviews, product_id)
 
 
 async def get_reviews_to_product(product_id: int, previous_id: int):
