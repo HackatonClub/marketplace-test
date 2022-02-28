@@ -52,3 +52,11 @@ class DB:
         except Exception as er:
             print(er)
             return False
+
+    @classmethod
+    async def fetchval(cls, sql, *args):
+        try:
+            return await DB.con.fetchval(sql, *args)
+        except Exception as er:
+            print(er)
+            return False
