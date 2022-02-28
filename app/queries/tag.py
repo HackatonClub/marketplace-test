@@ -42,7 +42,7 @@ async def get_all_tags(previous_id: int):
 
 
 async def get_tags_of_product_by_id(id: int, previous_id: int):
-    sql = "select tags.name,tags.id as previous_id from tags_product join tags on tags.id = tags_product.tag_id where tags_product.product_id = $1 and tags.id > $1 limit $2;"
+    sql = "select tags.name,tags.id as previous_id from tags_product join tags on tags.id = tags_product.tag_id where tags_product.product_id = $1 and tags.id > $2 limit $3;"
     return await DB.fetch(sql, id, previous_id, ITEMS_PER_PAGE)
 
 

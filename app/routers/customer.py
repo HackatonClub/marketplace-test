@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 import app.queries.customer as customer
 from app.model import Customer, CutomerNew
+from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
 customer_router = APIRouter(tags=["Customer"])
@@ -23,11 +24,13 @@ async def add_customer(temp: CutomerNew):
 
 
 @customer_router.get('/customer')
-async def get_customers(previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+async def get_customers(previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
     customers = await customer.get_all_customers(previous_id)
+    previous_id = get_previous_id(customers)
     customers = format_records(customers)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
-        'customers': customers
+        'customers': customers,
+        'previous_id': previous_id
     })
 
 

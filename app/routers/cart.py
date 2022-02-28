@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 import app.queries.cart as cart
 from app.model import Cart, CartDelete
+from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
 cart_router = APIRouter(tags=["Cart"])
@@ -49,9 +50,11 @@ async def delete_favourite(temp: CartDelete):
 
 @cart_router.get('/customer/cart')
 async def get_customers(customer_name: str = Query(None, description='Имя покупателя'),
-                        previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+                        previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
     products = await cart.get_cart_products(customer_name, previous_id)
+    previous_id = get_previous_id(products)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
-        'products': products
+        'products': products,
+        'previous_id': previous_id
     })

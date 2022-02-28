@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 import app.queries.favourite as favourite
 from app.model import Favourite
+from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
 favourite_router = APIRouter(tags=["Favourite"])
@@ -34,9 +35,11 @@ async def delete_favourite(temp: Favourite):
 
 @favourite_router.get('/customer/favourite')
 async def get_customer_favourite(customer_name: str = Query(None, description='Имя покупателя'),
-                                 previous_id: int = Query(0, title='Индекс последнего запроса', gt=0)):
+                                 previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
     favourites = await favourite.get_favourites(customer_name, previous_id)
+    previous_id = get_previous_id(favourites)
     favourites = format_records(favourites)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
-        'favourite': favourites
+        'favourite': favourites,
+        'previous_id': previous_id
     })
