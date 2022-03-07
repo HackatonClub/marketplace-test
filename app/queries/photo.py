@@ -1,16 +1,18 @@
 from app.db.db import DB
 
 
-
-
 async def check_product(product_id: int):
-    sql = f"SELECT id FROM product WHERE id = {product_id}"
+
+    sql = f""" SELECT id
+               FROM product
+               WHERE id = {product_id}"""
+
     try:
 
-        id = await DB.fetchrow(sql)
+        prod_id = await DB.fetchrow(sql)
 
-        if not id :
-           return True
+        if not prod_id:
+            return True
 
         return False
 
@@ -19,18 +21,29 @@ async def check_product(product_id: int):
         return False
 
 
-async def add_photo(product_id : int , url : str):
-    sql = f"""Insert into product_photo (product_id, url) values ('{product_id}' , '{url}'); """
+async def add_photo(product_id: int, url: str):
+
+    sql = f"""  INSERT INTO product_photo (product_id, url)
+                VALUES ('{product_id}', '{url}'); """
+
     return await DB.execute(sql)
 
 
-async def get_all_name_photo(product_id : int):
-    sql = f""" SELECT url from product_photo where product_id = {product_id}"""
+async def get_all_name_photo(product_id: int):
+
+    sql = f"""  SELECT url
+                FROM product_photo
+                WHERE product_id = {product_id}"""
+
     photo_name = await DB.fetch(sql)
     return photo_name
 
-async def delete_photo_by_name(product_id : int , url : str):
-    sql = f""" DELETE from product_photo where product_id = {product_id} and url = '{url}' """
+
+async def delete_photo_by_name(product_id: int, url: str):
+
+    sql = f"""  DELETE
+                FROM product_photo
+                WHERE product_id = {product_id}
+                  AND url = '{url}'"""
+
     await DB.execute(sql)
-    
-    

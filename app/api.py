@@ -1,21 +1,18 @@
 import sys
 
-from fastapi import FastAPI
-
 from app.db.db import DB
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
 from app.routers.favourite import favourite_router
 from app.routers.photo import photo_router
 from app.routers.product import product_router
-from app.db.db import DB
 from app.routers.registr import registr_router
 from app.routers.review import review_router
 from app.routers.tag import tags_router
 
-app = FastAPI(
-    title='Marketplace'
-)
+from fastapi import FastAPI
+
+app = FastAPI(title='Marketplace')
 
 
 @app.on_event('startup')

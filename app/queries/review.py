@@ -44,5 +44,13 @@ async def update_product_dynamic_data(product_id: int):
 
 
 async def get_reviews_to_product(product_id: int, previous_id: int):
-    sql = "select r.body, r.rating, c.name,r.id as previous_id from review as r join customer c on r.customer_id = c.id where product_id = $1 and r.id > $2 limit $3"
+    sql = """   SELECT r.body,
+                       r.rating,
+                       c.name,
+                       r.id AS previous_id
+                FROM review AS r
+                JOIN customer c ON r.customer_id = c.id
+                WHERE product_id = $1
+                AND r.id > $2
+                LIMIT $3"""
     return await DB.fetch(sql, product_id, previous_id, ITEMS_PER_PAGE)

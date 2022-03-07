@@ -1,10 +1,10 @@
-from fastapi import APIRouter, status, HTTPException, Query
-from fastapi.responses import JSONResponse
-
 import app.queries.customer as customer_queries
 from app.model import Customer, CutomerNew
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
+
+from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import JSONResponse
 
 customer_router = APIRouter(tags=["Customer"])
 
@@ -17,7 +17,7 @@ async def add_customer(customer: CutomerNew):
             detail='Покупатель с таким именем существует'
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -28,7 +28,7 @@ async def get_customers(previous_id: int = Query(0, title='Индекс посл
     customers = format_records(customers)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'customers': customers,
-        'previous_id': previous_id
+        'previous_id': previous_id,
     })
 
 
@@ -37,8 +37,8 @@ async def delete_customer(customer: Customer):
     if not await customer_queries.delete_customer(customer.name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Покупатель уже удален'
+            detail='Покупатель уже удален',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })

@@ -1,6 +1,7 @@
 from app.db.db import DB
 from app.settings import ITEMS_PER_PAGE
 
+
 async def add_customer(name: str, password: str):
     sql = "insert into customer(name,password) values ($1,$2)"
     await DB.execute(sql, name, password)

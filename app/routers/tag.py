@@ -1,12 +1,13 @@
 from typing import List
 
-from fastapi import APIRouter, status, HTTPException, Path, Query
-from fastapi.responses import JSONResponse
-
 import app.queries.tag as tag_queries
 from app.model import Tag
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
+
+from fastapi import APIRouter, HTTPException, Path, Query, status
+from fastapi.responses import JSONResponse
+
 
 tags_router = APIRouter(tags=["Tags"])
 
@@ -18,10 +19,10 @@ async def add_tag(tag: Tag):
     if not await tag_queries.add_new_tag(tag.tag_name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Тэг уже существует'
+            detail='Тэг уже существует',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -33,7 +34,7 @@ async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID про
             detail='Нет заданного продукта или тэг уже присвоен'
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -42,10 +43,10 @@ async def delete_tag(tag: Tag):
     if not await tag_queries.remove_tag(tag.tag_name):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Тэг уже удален'
+            detail='Тэг уже удален',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -54,10 +55,10 @@ async def remove_tag_from_product(tag: Tag, product_id: int = Path(..., title='I
     if not await tag_queries.remove_tag_from_product_by_id(tag.tag_name, product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Тэг уже удален'
+            detail='Тэг уже удален',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -68,7 +69,7 @@ async def get_all_tags(previous_id: int = Query(0, title='Индекс посл�
     tags = format_records(tags)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'tags': tags,
-        'previous_id': previous_id
+        'previous_id': previous_id,
     })
 
 
@@ -80,7 +81,7 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
     tags = format_records(tags)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'tags': tags,
-        'previous_id': previous_id
+        'previous_id': previous_id,
     })
 
 
@@ -92,5 +93,5 @@ async def get_products_by_tags(tags: List[str] = Query(None),
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'products': products,
-        'previous_id': previous_id
+        'previous_id': previous_id,
     })

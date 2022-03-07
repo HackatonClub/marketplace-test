@@ -1,8 +1,11 @@
+
 from datetime import datetime, timedelta
 from typing import Optional
-from jose import JWTError, jwt
+
 from app.model import TokenData
-from app.settings import ALGORITHM, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.settings import ALGORITHM, SECRET_KEY
+
+from jose import JWTError, jwt
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -23,7 +26,7 @@ def verify_token(token: str, credentails_exception):
         if login is None:
             raise credentails_exception
         token_data = TokenData(login=login)
-        
+
     except JWTError:
         raise credentails_exception
     return token_data.login

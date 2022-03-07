@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.auth.JWTtoken import  create_access_token
+from app.auth.JWTtoken import create_access_token
 from datetime import timedelta
 from fastapi.param_functions import Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -10,7 +10,6 @@ import app.queries.registr as registr
 
 
 registr_router = APIRouter(tags=["Registration"])
-
 
 
 @registr_router.post('/registration')

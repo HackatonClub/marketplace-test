@@ -1,10 +1,10 @@
-from fastapi import APIRouter, status, HTTPException, Query
-from fastapi.responses import JSONResponse
-
 import app.queries.favourite as favourite_queries
 from app.model import Favourite
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
+
+from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import JSONResponse
 
 favourite_router = APIRouter(tags=["Favourite"])
 
@@ -14,10 +14,10 @@ async def add_favourite(favourite: Favourite):
     if not await favourite_queries.add_favourite(favourite.customer_name, favourite.product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет такого покупателя и/или продукта, или продукт уже добавлен в избранное'
+            detail='Нет такого покупателя и/или продукта, или продукт уже добавлен в избранное',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -26,10 +26,10 @@ async def delete_favourite(favourite: Favourite):
     if not await favourite_queries.remove_favourite(favourite.customer_name, favourite.product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Уже удален из избранного'
+            detail='Уже удален из избранного',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -41,5 +41,5 @@ async def get_customer_favourite(customer_name: str = Query(None, description='�
     favourites = format_records(favourites)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'favourite': favourites,
-        'previous_id': previous_id
+        'previous_id': previous_id,
     })
