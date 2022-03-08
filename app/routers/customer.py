@@ -1,3 +1,4 @@
+
 import app.queries.customer as customer_queries
 from app.model import Customer, CutomerNew
 from app.utils.extracter import get_previous_id
@@ -5,6 +6,7 @@ from app.utils.formatter import format_records
 
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import JSONResponse
+
 
 customer_router = APIRouter(tags=["Customer"])
 

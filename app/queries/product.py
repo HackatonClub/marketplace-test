@@ -24,4 +24,4 @@ async def update_product(product: ProductUp):
                  description = $2,
                  price = $3
              WHERE id = $4  """
-    return await DB.execute(sql, product.name, product.discription, product.price, product.id)
+    return await DB.execute(sql, product.name, product.discription, product.price, product.product_id)

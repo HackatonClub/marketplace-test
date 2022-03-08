@@ -2,7 +2,6 @@ from app.db.db import DB
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 
-
 # TODO: Добавить динамику в добавление и удаление, но тогда код станет менее стабильным
 
 async def add_review_to_product(customer_name: str, product_id: int, body: str, rating: int):

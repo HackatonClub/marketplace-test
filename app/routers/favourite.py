@@ -6,6 +6,7 @@ from app.utils.formatter import format_records
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 
+
 favourite_router = APIRouter(tags=["Favourite"])
 
 

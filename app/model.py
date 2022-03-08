@@ -1,7 +1,6 @@
 from typing import Optional
 
 from fastapi import Query
-
 from pydantic import BaseModel, Field
 
 
@@ -66,7 +65,7 @@ class ProductAdd(BaseModel):
 
 
 class ProductUp(BaseModel):
-    id: int = Query(None, title='Id продукта', gt=0)
+    product_id: int = Query(None, title='Id продукта', gt=0)
     name: str = Field(None, title='Название продукта')
     discription: str = Field(None, title='Описание продукта')
     price: int = Field(None, title='Цена продукта', gt=0)

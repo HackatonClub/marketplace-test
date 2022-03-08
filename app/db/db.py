@@ -1,8 +1,7 @@
 
-from app.settings import DATABASE_URL
-
 import asyncpg
 
+from app.settings import DATABASE_URL
 
 # TODO: add_tag_to_product_by_id возможно можно быстрее сделать, а также сделать проверку на то, существует ли продукт
 # TODO: add_favourite в один запрос сделать, а также добавить проверку на неверного покупателя

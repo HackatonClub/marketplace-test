@@ -6,6 +6,7 @@ from app.utils.formatter import format_records
 from fastapi import APIRouter, HTTPException, Path, Query, status
 from fastapi.responses import JSONResponse
 
+
 review_router = APIRouter(tags=["Review"])
 
 
@@ -17,7 +18,7 @@ async def add_product_to_cart(review: Review):
                                                       review.rating):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет такого покупателя и/или продукта'
+            detail='Нет такого покупателя и/или продукта',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
