@@ -1,5 +1,6 @@
 
 import asyncpg
+import json
 
 from app.settings import DATABASE_URL
 
@@ -8,6 +9,7 @@ from app.settings import DATABASE_URL
 # TODO: колда будевт функция добавить отзыв, не забыть добавить динамику в вычислении среднего рейтинга
 #           и колва отзывов в продукт
 
+
 class DB:
     con: asyncpg.connection.Connection = None
 
@@ -15,6 +17,12 @@ class DB:
     async def connect_db(cls):
         try:
             cls.con = await asyncpg.connect(DATABASE_URL)
+            await cls.con.set_type_codec(
+                    'json',
+                    encoder=json.dumps,
+                    decoder=json.loads,
+                    schema='pg_catalog',
+             )
         except Exception as er:
             print(er)
             cls.con = None

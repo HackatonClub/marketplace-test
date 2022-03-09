@@ -21,12 +21,11 @@ async def check_product(product_id: int):
         return False
 
 
-async def add_photo(product_id: int, url: str):
+async def add_photo(product_id: int, url: dict):
 
-    sql = f"""  INSERT INTO product_photo (product_id, url)
-                VALUES ('{product_id}', '{url}'); """
-
-    return await DB.execute(sql)
+    sql = """  INSERT INTO product_photo (product_id, url)
+                VALUES ($1, $2 ::json ); """
+    return await DB.execute(sql, product_id, url)
 
 
 async def get_all_name_photo(product_id: int):

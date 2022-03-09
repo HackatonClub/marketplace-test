@@ -24,15 +24,20 @@ async def create_files(product_id: int = Path(..., title='ID продукта', 
     upload_path = folder_path.joinpath(pathlib.Path("assets"))
 
     # Загрузка
+    i = 1
+    urls = {}
     for file in files:
         photo_path = upload_path.joinpath(pathlib.Path(f"{file.filename}"))
         with open(photo_path, "wb+") as file_object:
             file_object.write(file.file.read())
-        if not await photo.add_photo(product_id, f"{file.filename}"):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Такого продукта с таким id не существует',
-            )
+        urls[f"photo{i}"] = file.filename
+        i += 1
+    print(urls)
+    if not await photo.add_photo(product_id, urls):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Такого продукта с таким id не существует',
+         )
     # Внесение каталога в бд
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={

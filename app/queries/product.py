@@ -25,3 +25,22 @@ async def update_product(product: ProductUp):
                  price = $3
              WHERE id = $4  """
     return await DB.execute(sql, product.name, product.discription, product.price, product.product_id)
+
+
+async def get_info_product(product_id: int):
+    sql = """ SELECT array
+                (SELECT url
+                FROM product_photo
+                WHERE product_photo.product_id=$1) AS image,
+                    array
+                (SELECT tag_id
+                FROM tags_product
+                WHERE tags_product.product_id=$1) AS tags_id,
+                    product.name,
+                    product.description,
+                    product.price,
+                    product.avg_rating,
+                    product.num_reviews
+                FROM product
+                WHERE product.id=3"""
+    return await DB.fetch(sql, product_id)

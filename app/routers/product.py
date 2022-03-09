@@ -37,3 +37,11 @@ async def update_product(produ: ProductUp):
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
+
+
+@product_router.get('/product/{product_id}')
+async def get_product(product_id: int = Query(None, description='Id продукта')):
+
+    product_info = await product.get_info_product(product_id)
+
+    return product_info
