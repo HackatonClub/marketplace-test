@@ -34,8 +34,7 @@ create table tags_product
         constraint tags_product_pk
             primary key,
     product_id integer references product (id) on delete cascade,
-    tag_id     integer references tags (id) on delete cascade,
-    unique (product_id, tag_id)
+    tag_id jsonb
 );
 
 create table product_photo
@@ -44,7 +43,7 @@ create table product_photo
         constraint product_photo_pk
             primary key,
     product_id integer references product (id) on delete cascade,
-    url        varchar(256)
+    url jsonb
 );
 
 create table cart_product
