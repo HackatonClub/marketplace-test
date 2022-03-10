@@ -1,8 +1,10 @@
 import sys
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 
 from app.db.db import DB
+from app.exceptions import NotFoundException, ServerException
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
 from app.routers.favourite import favourite_router
@@ -24,6 +26,22 @@ async def startup():
 @app.on_event('shutdown')
 async def shutdown():
     await DB.disconnect_db()
+
+
+@app.exception_handler(NotFoundException)
+async def not_found_error_handler(request: Request, exception: NotFoundException):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={'details': exception.error},
+    )
+
+
+@app.exception_handler(ServerException)
+async def server_error_handler(request: Request, exception: ServerException):
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={'details': exception.error},
+    )
 
 
 app.include_router(tags_router)
