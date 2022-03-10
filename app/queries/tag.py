@@ -47,7 +47,14 @@ async def get_all_tags(previous_id: int):
 
 
 async def get_tags_of_product_by_id(id: int, previous_id: int):
-    sql = "select tags.name,tags.id as previous_id from tags_product join tags on tags.id = tags_product.tag_id where tags_product.product_id = $1 and tags.id > $2 limit $3;"
+    sql = """
+        SELECT  tags.name,
+                tags.id AS previous_id
+        FROM tags_product
+        JOIN tags ON tags.id = tags_product.tag_id
+        WHERE tags_product.product_id = $1
+          AND tags.id > $2
+        LIMIT $3;"""
     return await DB.fetch(sql, id, previous_id, ITEMS_PER_PAGE)
 
 
@@ -59,7 +66,20 @@ async def get_products_by_tags(tags: list, previous_id: int):
         )
     sql = "select id from tags where name = ANY($1::text[])"
     tag_ids = get_col_values(await DB.fetch(sql, tags), 'id')
-    sql = "with ids as (select product_id,count(tag_id) from tags_product as t where t.tag_id = ANY($1::int[]) group by product_id) select p.name,p.id as previous_id from product as p join ids on p.id = ids.product_id where ids.count = $2 and p.id > $3 limit $4;"
+    sql = """
+            WITH ids AS
+              (SELECT product_id,
+                        count(tag_id)
+                FROM tags_product AS t
+                WHERE t.tag_id = ANY($1::int[])
+                GROUP BY product_id)
+            SELECT p.name,
+                   p.id AS previous_id
+            FROM product AS p
+            JOIN ids ON p.id = ids.product_id
+            WHERE ids.count = $2
+              AND p.id > $3
+            LIMIT $4;"""
     return await DB.fetch(sql, tag_ids, len(tags), previous_id, ITEMS_PER_PAGE)
 
 

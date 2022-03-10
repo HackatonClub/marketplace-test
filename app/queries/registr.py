@@ -3,13 +3,16 @@ from app.model import User
 
 
 async def check_login(login: str):
-    userlogin = await DB.fetchrow(f"""
-                SELECT id FROM customer WHERE name = '{login}';
-    """)
+    sql = f"""   SELECT id
+                FROM customer
+                WHERE name = '{login}';"""
+    userlogin = await DB.fetchrow(sql)
     return userlogin
 
 
-async def create_user(User: User):
-    await DB.execute(f'''
-          INSERT INTO customer (name,password) VALUES ('{User.login}','{User.password}');
-    ''')
+async def create_user(user: User):
+
+    sql = f"""  INSERT INTO customer (name, password)
+                VALUES ('{user.login}','{user.password}');  """
+
+    await DB.execute(sql)

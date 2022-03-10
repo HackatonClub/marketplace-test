@@ -45,5 +45,14 @@ async def get_cart_products(customer_name: str, previous_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Нет такого покупателя'
         )
-    sql = 'select p.id as product_id,p.name,cart_product.product_num,cart_product.id as previous_id from cart_product join product p on p.id = cart_product.product_id where customer_id = $1 and cart_product.id > $2 limit $3'
+    sql = """
+                SELECT p.id AS product_id,
+                       p.name,
+                       cart_product.product_num,
+                       cart_product.id AS previous_id
+                FROM cart_product
+                JOIN product p ON p.id = cart_product.product_id
+                WHERE customer_id = $1
+                    AND cart_product.id > $2
+                LIMIT $3;"""
     return await DB.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)

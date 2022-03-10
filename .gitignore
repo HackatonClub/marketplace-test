@@ -5,3 +5,10 @@
 __pycache__/
 
 __pycache__
+
+## Настройки vscode
+.vscode/
+
+## среда
+.venv/
+env

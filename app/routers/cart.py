@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 
 import app.queries.cart as cart_queries
@@ -14,10 +14,10 @@ async def add_product_to_cart(cart: Cart):
     if not await cart_queries.add_product_to_cart(cart.customer_name, cart.product_id, cart.product_num):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет такого покупателя или продукт уже добавлен в корзину'
+            detail='Нет такого покупателя или продукт уже добавлен в корзину',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -26,10 +26,10 @@ async def update_product_in_cart(cart: Cart):
     if not await cart_queries.update_product_in_cart(cart.customer_name, cart.product_id, cart.product_num):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Такого продукта не существует'
+            detail='Такого продукта не существует',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -38,10 +38,10 @@ async def delete_favourite(cart: CartDelete):
     if not await cart_queries.delete_product_from_cart(cart.customer_name, cart.product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Уже удален из корзины'
+            detail='Уже удален из корзины',
         )
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed'
+        'details': 'Executed',
     })
 
 
@@ -53,5 +53,5 @@ async def get_customers(customer_name: str = Query(None, description='Имя п�
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'products': products,
-        'previous_id': previous_id
+        'previous_id': previous_id,
     })
