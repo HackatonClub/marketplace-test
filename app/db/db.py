@@ -1,6 +1,6 @@
+import json
 import logging
 import sys
-import json
 
 from app.exceptions import InternalServerError
 from app.settings import DATABASE_URL
