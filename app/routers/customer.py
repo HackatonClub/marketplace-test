@@ -6,7 +6,6 @@ from app.model import Customer, CutomerNew
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-
 customer_router = APIRouter(tags=["Customer"])
 
 

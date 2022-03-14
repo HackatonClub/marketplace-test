@@ -1,5 +1,6 @@
 from app.db.db import DB
-from app.exceptions import BadRequest, CustomerNotFoundException, NotFoundException
+from app.exceptions import (BadRequest, CustomerNotFoundException,
+                            NotFoundException)
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 

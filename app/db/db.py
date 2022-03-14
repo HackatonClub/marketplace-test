@@ -8,8 +8,6 @@ from asyncpg.exceptions import PostgresError, UniqueViolationError
 from app.exceptions import InternalServerError
 from app.settings import DATABASE_URL
 
-
-
 logger = logging.getLogger(__name__)
 
 

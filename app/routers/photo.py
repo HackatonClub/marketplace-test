@@ -2,12 +2,11 @@
 import pathlib
 from typing import List
 
-import app.queries.photo as photo
-
 from fastapi import (APIRouter, File, HTTPException, Path, Query, UploadFile,
                      status)
 from fastapi.responses import FileResponse, JSONResponse
 
+import app.queries.photo as photo
 
 photo_router = APIRouter(tags=["Photo"])
 
