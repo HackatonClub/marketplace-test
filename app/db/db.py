@@ -44,7 +44,7 @@ class DB:
     @classmethod
     async def fetch(cls, sql, *args):
         try:
-            return await DB.con.fetch(sql + 's', *args)
+            return await DB.con.fetch(sql, *args)
         except UniqueViolationError:
             return False
         except PostgresError as er:

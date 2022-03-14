@@ -4,8 +4,8 @@ class NotFoundException(Exception):
 
 
 class CustomerNotFoundException(NotFoundException):
-    def __init(self, error: str = 'Нет такого покупателя'):
-        self.error = error
+    def __init__(self):
+        super().__init__('Нет такого покупателя')
 
 
 class InternalServerError(Exception):

@@ -12,7 +12,7 @@ async def add_customer(name: str, password: str):
 async def delete_customer(customer_name: str):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        raise CustomerNotFoundException
+        raise CustomerNotFoundException()
     sql = "delete from review where customer_id = $1;"
     await DB.execute(sql, customer_id)
     sql = "delete from cart_product where customer_id = $1;"
