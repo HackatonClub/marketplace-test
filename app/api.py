@@ -1,7 +1,7 @@
-import sys
+import logging
 
 from app.db.db import DB
-from app.exceptions import BadRequest, CustomerNotFoundException, NotFoundException, ServerException
+from app.exceptions import BadRequest, CustomerNotFoundException, InternalServerError, NotFoundException
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
 from app.routers.favourite import favourite_router
@@ -14,13 +14,15 @@ from app.routers.tag import tags_router
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
+logger = logging.getLogger(__name__)
+
+
 app = FastAPI(title='Marketplace')
 
 
 @app.on_event('startup')
 async def startup():
-    if not await DB.connect_db():
-        sys.exit(0)
+    await DB.connect_db()
 
 
 @app.on_event('shutdown')
@@ -44,11 +46,12 @@ async def customer_not_found_error_handler(request: Request, exception: Customer
     )
 
 
-@app.exception_handler(ServerException)
-async def server_error_handler(request: Request, exception: ServerException):
+@app.exception_handler(InternalServerError)
+async def internal_server_error_handler(request: Request, exception: InternalServerError):
+    logger.error(exception)
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={'details': exception.error},
+        content={'details': 'Internal server error'},
     )
 
 

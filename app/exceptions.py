@@ -8,7 +8,7 @@ class CustomerNotFoundException(NotFoundException):
         self.error = error
 
 
-class ServerException(Exception):
+class InternalServerError(Exception):
     def __init__(self, error: str):
         self.error = error
 
