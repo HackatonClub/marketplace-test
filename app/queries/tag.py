@@ -1,5 +1,5 @@
 from app.db.db import DB
-from app.exceptions import BadRequest, CustomerNotFoundException, NotFoundException
+from app.exceptions import BadRequest, NotFoundException
 from app.settings import ITEMS_PER_PAGE
 from app.utils.extracter import get_col_values
 

@@ -1,10 +1,11 @@
+from fastapi import APIRouter, Query, status
+from fastapi.responses import JSONResponse
+
 import app.queries.favourite as favourite_queries
 from app.model import Favourite
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-from fastapi import APIRouter, Query, status
-from fastapi.responses import JSONResponse
 
 
 favourite_router = APIRouter(tags=["Favourite"])

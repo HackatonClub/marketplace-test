@@ -2,11 +2,12 @@ import json
 import logging
 import sys
 
+import asyncpg
+from asyncpg.exceptions import PostgresError, UniqueViolationError
+
 from app.exceptions import InternalServerError
 from app.settings import DATABASE_URL
 
-import asyncpg
-from asyncpg.exceptions import PostgresError, UniqueViolationError
 
 
 logger = logging.getLogger(__name__)
@@ -31,8 +32,8 @@ class DB:
                     decoder=json.loads,
                     schema='pg_catalog',
              )
-        except Exception as er:
-            logger.error(er)
+        except Exception as error:
+            logger.error(error)
             sys.exit(1)
 
     @classmethod
@@ -45,8 +46,8 @@ class DB:
             await DB.con.execute(sql, *args)
         except UniqueViolationError:
             return False
-        except PostgresError as er:
-            raise InternalServerError(str(er))
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
         return True
 
     @classmethod
@@ -55,8 +56,8 @@ class DB:
             return await DB.con.fetch(sql, *args)
         except UniqueViolationError:
             return False
-        except PostgresError as er:
-            raise InternalServerError(str(er))
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
 
     @classmethod
     async def fetchrow(cls, sql, *args):
@@ -64,8 +65,8 @@ class DB:
             return await DB.con.fetchrow(sql, *args)
         except UniqueViolationError:
             return False
-        except PostgresError as er:
-            raise InternalServerError(str(er))
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
 
     @classmethod
     async def fetchval(cls, sql, *args):
@@ -73,5 +74,5 @@ class DB:
             return await DB.con.fetchval(sql, *args)
         except UniqueViolationError:
             return False
-        except PostgresError as er:
-            raise InternalServerError(str(er))
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error

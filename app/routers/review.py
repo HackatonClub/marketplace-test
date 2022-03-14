@@ -1,16 +1,14 @@
+from fastapi import APIRouter, Path, Query, status
+from fastapi.responses import JSONResponse
+
 import app.queries.review as review_queries
 from app.model import Customer, Product, Review
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-from fastapi import APIRouter, HTTPException, Path, Query, status
-from fastapi.responses import JSONResponse
-
 
 review_router = APIRouter(tags=["Review"])
 
-
-# TODO: поменять status_code'ы
 
 @review_router.post('/review')
 async def add_product_to_cart(review: Review):

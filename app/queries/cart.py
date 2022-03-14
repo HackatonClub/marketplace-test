@@ -46,4 +46,3 @@ async def get_cart_products(customer_name: str, previous_id: int):
                     AND cart_product.id > $2
                 LIMIT $3;"""
     return await DB.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)
-

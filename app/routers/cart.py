@@ -1,10 +1,10 @@
+from fastapi import APIRouter, HTTPException, Query, status
+from fastapi.responses import JSONResponse
+
 import app.queries.cart as cart_queries
 from app.model import Cart, CartDelete
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
-
-from fastapi import APIRouter, HTTPException, Query, status
-from fastapi.responses import JSONResponse
 
 cart_router = APIRouter(tags=["Cart"])
 

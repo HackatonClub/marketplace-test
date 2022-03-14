@@ -1,5 +1,8 @@
 import logging
 
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
+
 from app.db.db import DB
 from app.exceptions import BadRequest, CustomerNotFoundException, InternalServerError, NotFoundException
 from app.routers.cart import cart_router
@@ -11,8 +14,6 @@ from app.routers.registr import registr_router
 from app.routers.review import review_router
 from app.routers.tag import tags_router
 
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ async def shutdown():
 
 @app.exception_handler(NotFoundException)
 async def not_found_error_handler(request: Request, exception: NotFoundException):
+    del request
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={'details': exception.error},
@@ -40,6 +42,7 @@ async def not_found_error_handler(request: Request, exception: NotFoundException
 
 @app.exception_handler(CustomerNotFoundException)
 async def customer_not_found_error_handler(request: Request, exception: CustomerNotFoundException):
+    del request
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={'details': exception.error},
@@ -48,6 +51,7 @@ async def customer_not_found_error_handler(request: Request, exception: Customer
 
 @app.exception_handler(InternalServerError)
 async def internal_server_error_handler(request: Request, exception: InternalServerError):
+    del request
     logger.error(exception)
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -57,6 +61,7 @@ async def internal_server_error_handler(request: Request, exception: InternalSer
 
 @app.exception_handler(BadRequest)
 async def bad_request_handler(request: Request, exception: BadRequest):
+    del request
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={'details': exception.error},

@@ -1,5 +1,6 @@
 class NotFoundException(Exception):
     def __init__(self, error: str):
+        super().__init__()
         self.error = error
 
 
@@ -10,9 +11,11 @@ class CustomerNotFoundException(NotFoundException):
 
 class InternalServerError(Exception):
     def __init__(self, error: str):
+        super().__init__()
         self.error = error
 
 
 class BadRequest(Exception):
     def __init__(self, error: str):
+        super().__init__()
         self.error = error

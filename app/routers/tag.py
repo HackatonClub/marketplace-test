@@ -1,18 +1,16 @@
 from typing import List
 
+from fastapi import APIRouter, Path, Query, status
+from fastapi.responses import JSONResponse
+
 import app.queries.tag as tag_queries
 from app.model import Tag
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-from fastapi import APIRouter, Path, Query, status
-from fastapi.responses import JSONResponse
-
 
 tags_router = APIRouter(tags=["Tags"])
 
-
-# TODO: можно создавать пустой тэг, не знаю это баг или фича
 
 @tags_router.post('/tag')
 async def add_tag(tag: Tag):
