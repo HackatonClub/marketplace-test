@@ -3,7 +3,7 @@ from app.model import Favourite
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Query, status
 from fastapi.responses import JSONResponse
 
 
@@ -12,11 +12,7 @@ favourite_router = APIRouter(tags=["Favourite"])
 
 @favourite_router.post('/customer/favourite')
 async def add_favourite(favourite: Favourite):
-    if not await favourite_queries.add_favourite(favourite.customer_name, favourite.product_id):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет такого покупателя и/или продукта, или продукт уже добавлен в избранное',
-        )
+    await favourite_queries.add_favourite(favourite.customer_name, favourite.product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -24,11 +20,7 @@ async def add_favourite(favourite: Favourite):
 
 @favourite_router.delete('/customer/favourite')
 async def delete_favourite(favourite: Favourite):
-    if not await favourite_queries.remove_favourite(favourite.customer_name, favourite.product_id):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Уже удален из избранного',
-        )
+    await favourite_queries.remove_favourite(favourite.customer_name, favourite.product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })

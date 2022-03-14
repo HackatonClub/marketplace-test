@@ -5,7 +5,7 @@ from app.model import Tag
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-from fastapi import APIRouter, HTTPException, Path, Query, status
+from fastapi import APIRouter, Path, Query, status
 from fastapi.responses import JSONResponse
 
 
@@ -16,11 +16,7 @@ tags_router = APIRouter(tags=["Tags"])
 
 @tags_router.post('/tag')
 async def add_tag(tag: Tag):
-    if not await tag_queries.add_new_tag(tag.tag_name):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Тэг уже существует',
-        )
+    await tag_queries.add_new_tag(tag.tag_name)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -28,11 +24,7 @@ async def add_tag(tag: Tag):
 
 @tags_router.post('/product/{product_id}/tag')
 async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0)):
-    if not await tag_queries.add_tag_to_product_by_id(tag.tag_name, product_id):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет заданного продукта или тэг уже присвоен'
-        )
+    await tag_queries.add_tag_to_product_by_id(tag.tag_name, product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -40,11 +32,7 @@ async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID про
 
 @tags_router.delete('/tag')
 async def delete_tag(tag: Tag):
-    if not await tag_queries.remove_tag(tag.tag_name):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Тэг уже удален',
-        )
+    await tag_queries.remove_tag(tag.tag_name)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -52,11 +40,7 @@ async def delete_tag(tag: Tag):
 
 @tags_router.delete('/product/{product_id}/tag')
 async def remove_tag_from_product(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0)):
-    if not await tag_queries.remove_tag_from_product_by_id(tag.tag_name, product_id):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Тэг уже удален',
-        )
+    await tag_queries.remove_tag_from_product_by_id(tag.tag_name, product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
