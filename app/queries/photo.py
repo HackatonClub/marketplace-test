@@ -30,19 +30,21 @@ async def add_photo(product_id: int, url: dict):
 
 async def get_all_name_photo(product_id: int):
 
-    sql = f"""  SELECT url
-                FROM product_photo
-                WHERE product_id = {product_id}"""
+    sql = """  SELECT url
+                FROM product
+                WHERE product.id = $1"""
 
-    photo_name = await DB.fetchrow(sql)
+    photo_name = await DB.fetchrow(sql, product_id)
     return photo_name
 
 
-async def delete_photo_by_name(product_id: int, url: str):
+async def delete_photo_by_name(product_id: int, key: str):
 
-    sql = f"""  DELETE
-                FROM product_photo
-                WHERE product_id = {product_id}
-                  AND url = '{url}'"""
+    sql = """select product.url ->$1 from product where id=$2;"""
+    image_name = await DB.fetchval(sql, key, product_id)
+    sql = """  UPDATE product
+                SET url = url - $1
+                WHERE id=$2;"""
 
-    await DB.execute(sql)
+    await DB.execute(sql, key, product_id)
+    return image_name

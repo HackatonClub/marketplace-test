@@ -1,17 +1,27 @@
 
 
-from fastapi import APIRouter, HTTPException, Query, status
+from typing import List
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
+from app.model import ProductUp
 
 import app.queries.product as product
-from app.model import ProductAdd, ProductUp
-
+from app.routers.download import downloadfilesproduct
 product_router = APIRouter(tags=["Product"])
 
 
 @product_router.post('/product')
-async def add_product(prod: ProductAdd):
-    await product.add_product(prod)
+async def add_product(name: str = Form(..., title='Название продукта', max_length=50),
+                      discription: str = Form(..., title='Описание продукта', max_length=350),
+                      price: int = Form(..., title='Цена продукта', gt=0),
+                      tag_id: str = Form(..., title='Тэги продукта'),
+                      upload_files: List[UploadFile] = File(...)):
+    urls = await downloadfilesproduct(upload_files)
+    # TODO: чтото сделать с тэгами
+    # тэги словарь
+    tag_id1 = {}
+    tag_id1["asdf"] = tag_id
+    print(await product.add_product(name, discription, price, tag_id1, urls))
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -19,7 +29,7 @@ async def add_product(prod: ProductAdd):
 
 @product_router.delete('/product')
 async def delete_product(product_id: int = Query(None, description='Id продукта')):
-
+    # TODO удалить файлы
     await product.delete_product(product_id)
 
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={
@@ -43,5 +53,4 @@ async def update_product(produ: ProductUp):
 async def get_product(product_id: int = Query(None, description='Id продукта')):
 
     product_info = await product.get_info_product(product_id)
-
     return product_info
