@@ -34,7 +34,7 @@ async def get_all_name_photo(product_id: int):
                 FROM product_photo
                 WHERE product_id = {product_id}"""
 
-    photo_name = await DB.fetch(sql)
+    photo_name = await DB.fetchrow(sql)
     return photo_name
 
 
