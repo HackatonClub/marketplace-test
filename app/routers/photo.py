@@ -34,7 +34,7 @@ async def get_product_photo_all_filename(product_id: int = Query(None, descripti
     return await photo.get_all_name_photo(product_id)
 
 
-@photo_router.delete('/product/{product_id}/photo/{image_name}')
+@photo_router.delete('/product/{product_id}/photo')
 async def delete_product_photo(product_id: int = Query(None, description='Id продукта'),
                                key: str = Query(None, description='photoid')):
 
