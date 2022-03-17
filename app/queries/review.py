@@ -1,34 +1,38 @@
 from app.db.db import DB
+from app.exceptions import BadRequest, CustomerNotFoundException, NotFoundException
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 
 # TODO: Добавить динамику в добавление и удаление, но тогда код станет менее стабильным
 
+
 async def add_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        return False
+        raise CustomerNotFoundException
     sql = "insert into review(product_id, customer_id, body, rating) VALUES ($1,$2,$3,$4)"
     await DB.execute(sql, product_id, customer_id, body, rating)
-    return update_product_dynamic_data(product_id)
+    await update_product_dynamic_data(product_id)
 
 
 async def delete_review_from_product(customer_name: str, product_id: int):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        return False
+        raise CustomerNotFoundException
     sql = "delete from review where customer_id = $1 and product_id = $2"
     await DB.execute(sql, customer_id, product_id)
-    return update_product_dynamic_data(product_id)
+    if not update_product_dynamic_data(product_id):
+        raise NotFoundException('Отзыв уже удалён')
 
 
 async def update_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
-        return False
+        raise CustomerNotFoundException
     sql = "update review set body = $1, rating = $2 where customer_id = $3 and product_id = $4"
-    await DB.execute(sql, body, rating, customer_id, product_id)
-    return await update_product_dynamic_data(product_id)
+    if not await DB.execute(sql, body, rating, customer_id, product_id):
+        raise BadRequest('Нет такого продукта')
+    await update_product_dynamic_data(product_id)
 
 
 async def update_product_dynamic_data(product_id: int):
@@ -39,7 +43,8 @@ async def update_product_dynamic_data(product_id: int):
     sql = "update product set num_reviews = $2, avg_rating = $1 where id = $3"
     num_reviews = temp['count']
     avg_rating = temp['sum'] / temp['count']
-    return await DB.execute(sql, avg_rating, num_reviews, product_id)
+    if not await DB.execute(sql, avg_rating, num_reviews, product_id):
+        raise BadRequest('Нет такого продукта')
 
 
 async def get_reviews_to_product(product_id: int, previous_id: int):

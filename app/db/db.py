@@ -1,8 +1,17 @@
+import json
+import logging
+import sys
 
 import asyncpg
-import json
+from asyncpg.exceptions import PostgresError, UniqueViolationError
 
+from app.exceptions import InternalServerError
 from app.settings import DATABASE_URL
+
+
+
+logger = logging.getLogger(__name__)
+
 
 # TODO: add_tag_to_product_by_id возможно можно быстрее сделать, а также сделать проверку на то, существует ли продукт
 # TODO: add_favourite в один запрос сделать, а также добавить проверку на неверного покупателя
@@ -23,11 +32,9 @@ class DB:
                     decoder=json.loads,
                     schema='pg_catalog',
              )
-        except Exception as er:
-            print(er)
-            cls.con = None
-            return False
-        return True
+        except Exception as error:
+            logger.error(error)
+            sys.exit(1)
 
     @classmethod
     async def disconnect_db(cls):
@@ -37,31 +44,35 @@ class DB:
     async def execute(cls, sql, *args):
         try:
             await DB.con.execute(sql, *args)
-        except Exception as er:
-            print(er)
+        except UniqueViolationError:
             return False
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
         return True
 
     @classmethod
     async def fetch(cls, sql, *args):
         try:
             return await DB.con.fetch(sql, *args)
-        except Exception as er:
-            print(er)
+        except UniqueViolationError:
             return False
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
 
     @classmethod
     async def fetchrow(cls, sql, *args):
         try:
             return await DB.con.fetchrow(sql, *args)
-        except Exception as er:
-            print(er)
+        except UniqueViolationError:
             return False
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
 
     @classmethod
     async def fetchval(cls, sql, *args):
         try:
             return await DB.con.fetchval(sql, *args)
-        except Exception as er:
-            print(er)
+        except UniqueViolationError:
             return False
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error

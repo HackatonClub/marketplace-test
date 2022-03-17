@@ -16,8 +16,8 @@ async def check_product(product_id: int):
 
         return False
 
-    except Exception as er:
-        print(er)
+    except Exception as error:
+        print(error)
         return False
 
 

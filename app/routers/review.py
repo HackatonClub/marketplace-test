@@ -1,25 +1,18 @@
+from fastapi import APIRouter, Path, Query, status
+from fastapi.responses import JSONResponse
+
 import app.queries.review as review_queries
 from app.model import Customer, Product, Review
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-from fastapi import APIRouter, HTTPException, Path, Query, status
-from fastapi.responses import JSONResponse
-
 
 review_router = APIRouter(tags=["Review"])
 
 
-# TODO: поменять status_code'ы
-
 @review_router.post('/review')
 async def add_product_to_cart(review: Review):
-    if not await review_queries.add_review_to_product(review.customer_name, review.product_id, review.body,
-                                                      review.rating):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет такого покупателя и/или продукта',
-        )
+    await review_queries.add_review_to_product(review.customer_name, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -27,12 +20,7 @@ async def add_product_to_cart(review: Review):
 
 @review_router.put('/review')
 async def update_product_in_cart(review: Review):
-    if not await review_queries.update_review_to_product(review.customer_name, review.product_id, review.body,
-                                                         review.rating):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Нет такого покупателя и/или продукта',
-        )
+    await review_queries.update_review_to_product(review.customer_name, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -40,11 +28,7 @@ async def update_product_in_cart(review: Review):
 
 @review_router.delete('/review')
 async def delete_favourite(product: Product, customer: Customer):
-    if not await review_queries.delete_review_from_product(customer.name, product.product_id):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Отзыв уже удалён',
-        )
+    await review_queries.delete_review_from_product(customer.name, product.product_id)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Executed',
     })
