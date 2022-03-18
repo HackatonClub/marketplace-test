@@ -4,9 +4,14 @@ from typing import List
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from app.model import ProductUp
+import json
 
+import app.queries.photo as photo
 import app.queries.product as product
 from app.routers.download import downloadfilesproduct
+from app.routers.delete import deletfilesproduct
+
+
 product_router = APIRouter(tags=["Product"])
 
 
@@ -29,7 +34,16 @@ async def add_product(name: str = Form(..., title='Название продук
 
 @product_router.delete('/product')
 async def delete_product(product_id: int = Query(None, description='Id продукта')):
-    # TODO удалить файлы
+    urls = await photo.get_name_photo_for_delete(product_id)
+    urls = json.loads(urls.replace("'", '"'))
+    for image_name in urls.values():
+        if not image_name:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail='Файл не существует',
+                )
+        await deletfilesproduct(image_name)
+
     await product.delete_product(product_id)
 
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={

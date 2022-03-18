@@ -48,3 +48,13 @@ async def delete_photo_by_name(product_id: int, key: str):
 
     await DB.execute(sql, key, product_id)
     return image_name
+
+
+async def get_name_photo_for_delete(product_id: int):
+
+    sql = """  SELECT url
+                FROM product
+                WHERE product.id = $1"""
+
+    photo_name = await DB.fetchval(sql, product_id)
+    return photo_name

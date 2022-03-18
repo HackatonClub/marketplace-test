@@ -1,11 +1,12 @@
 
 import pathlib
-
+import json
 
 import app.queries.photo as photo
 
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import FileResponse, JSONResponse
+from app.routers.delete import deletfilesproduct
 
 
 photo_router = APIRouter(tags=["Photo"])
@@ -39,16 +40,13 @@ async def delete_product_photo(product_id: int = Query(None, description='Id п�
                                key: str = Query(None, description='photoid')):
 
     image_name = await photo.delete_photo_by_name(product_id, key)
-
-    folder_path = pathlib.Path(__file__).parent.resolve()
-    file_path = folder_path.joinpath(pathlib.Path(f"assets/{image_name[1:len(image_name)-1]}"))
-    if not pathlib.Path.is_file(file_path):
+    image_name = json.loads(image_name.replace("'", '"'))
+    if not image_name:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Файл не существует',
-        )
-
-    pathlib.Path.unlink(file_path)
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail='Файл не существует',
+                )
+    await deletfilesproduct(image_name)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Файл удален',
     })
