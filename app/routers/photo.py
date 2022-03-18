@@ -1,12 +1,13 @@
 
 import pathlib
 import json
-
+from typing import List
 import app.queries.photo as photo
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
 from app.routers.delete import deletfilesproduct
+from app.routers.download import downloadfilesproduct
 
 
 photo_router = APIRouter(tags=["Photo"])
@@ -49,4 +50,12 @@ async def delete_product_photo(product_id: int = Query(None, description='Id п�
     await deletfilesproduct(image_name)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Файл удален',
+    })
+
+
+@photo_router.post('/product/{product_id}/photo')
+async def add_photo(upload_files: List[UploadFile] = File(...)):
+    await downloadfilesproduct(upload_files)
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content={
+        'details': 'Executed',
     })

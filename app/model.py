@@ -58,19 +58,13 @@ class FavouriteOfUser(BaseModel):
     customer_name: str = Field(None, title='Имя покупателя')
 
 
-class ProductAdd(BaseModel):
-    name: str = Form(None, title='Название продукта', max_length=50)
-    discription: str = Form(None, title='Описание продукта', max_length=350)
-    price: int = Form(None, title='Цена продукта', gt=0)
-    tag_id: str = Form(None, title='Тэги продукта')
-    files: List[UploadFile] = File(...)
-
-
 class ProductUp(BaseModel):
     product_id: int = Query(None, title='Id продукта', gt=0)
     name: str = Field(None, title='Название продукта')
     discription: str = Field(None, title='Описание продукта')
     price: int = Field(None, title='Цена продукта', gt=0)
+    urls: dict = Field(None, title='photoid : image_name')
+    tag_id: dict = Field(None, title='Tagid : id')
 
 
 class Review(BaseModel):

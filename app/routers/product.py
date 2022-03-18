@@ -53,6 +53,13 @@ async def delete_product(product_id: int = Query(None, description='Id прод�
 
 @product_router.put('/product/{product_id}')
 async def update_product(produ: ProductUp):
+    print(produ.tag_id)
+    if produ.urls:
+        urls = await photo.get_name_photo_for_delete(produ.product_id)
+        urls = json.loads(urls.replace("'", '"'))
+        for image_name in urls.values():
+            await deletfilesproduct(image_name)
+
     if not await product.update_product(produ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

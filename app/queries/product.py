@@ -1,13 +1,14 @@
 
 from app.db.db import DB
 from app.model import ProductUp
+import json
 
 
 async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict):
 
     sql = """  INSERT INTO product(name, description, price, avg_rating, num_reviews, url ,tag_id)
-                VALUES ($1,$2,$3,0,0, $4 ::json, $5 ::json)  """
-    await DB.execute(sql, name, description, price, urls, tag_id)
+                VALUES ($1,$2,$3,0,0, $4 ::jsonb, $5 ::jsonb)  """
+    await DB.execute(sql, name, description, price, json.dumps(urls), json.dumps(tag_id))
 
 
 async def delete_product(product_id: int):
@@ -19,13 +20,16 @@ async def delete_product(product_id: int):
     await DB.execute(sql)
 
 
-async def update_product(product: ProductUp):
-    sql = """UPDATE product
-             SET name = $1,
-                 description = $2,
-                 price = $3
-             WHERE id = $4  """
-    return await DB.execute(sql, product.name, product.discription, product.price, product.product_id)
+async def update_product(prod: ProductUp):
+    sql = '''  UPDATE product
+                SET name = coalesce($1, name),
+                    description = coalesce($2, description),
+                    price = coalesce($3, price),
+                    url = coalesce( NULLIF($4, 'null' ::jsonb), url ),
+                    tag_id  = coalesce( NULLIF($5, 'null' :: jsonb), tag_id)
+                WHERE product.id =$6; '''
+    return await DB.execute(sql, prod.name, prod.discription, prod.price,
+                            json.dumps(prod.urls), json.dumps(prod.tag_id), prod.product_id)
 
 
 async def get_info_product(product_id: int):
