@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from app.db.db import DB
+from app.db.redis import Redis
 from app.exceptions import BadRequest, CustomerNotFoundException, InternalServerError, NotFoundException
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
@@ -24,12 +25,14 @@ app = FastAPI(title='Marketplace')
 @app.on_event('startup')
 async def startup():
     await DB.connect_db()
+    await Redis.connect_redis()
+    await Redis.load_tags()
 
 
 @app.on_event('shutdown')
 async def shutdown():
     await DB.disconnect_db()
-
+    await Redis.disconnect_redis()
 
 @app.exception_handler(NotFoundException)
 async def not_found_error_handler(request: Request, exception: NotFoundException):
