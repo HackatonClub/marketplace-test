@@ -33,6 +33,7 @@ async def remove_tag(tag_name: str):
     tag_id = await get_tag_id(tag_name)
     sql = 'delete from tags_product where tag_id = $1'
     await DB.execute(sql, tag_id)
+    await Redis.del_tag(tag_id)
     sql = 'delete from tags where id = $1'
     await DB.execute(sql, tag_id)
 

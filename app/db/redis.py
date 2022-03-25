@@ -44,6 +44,10 @@ class Redis:
         await cls.con.srem(tag_id,product_id)
 
     @classmethod
+    async def del_tag(cls,tag_id):
+        await cls.con.delete(tag_id)
+
+    @classmethod
     async def set_hash(cls,hash_name: str, hash_value: str):
         await cls.con.set(hash_name,hash_value,HASH_EXPIRE)
 
