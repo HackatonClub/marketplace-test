@@ -55,7 +55,7 @@ async def customer_not_found_error_handler(request: Request, exception: Customer
 @app.exception_handler(InternalServerError)
 async def internal_server_error_handler(request: Request, exception: InternalServerError):
     del request
-    logger.error(exception)
+    logger.error(exception.error)
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={'details': 'Internal server error'},

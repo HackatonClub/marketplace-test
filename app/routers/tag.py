@@ -70,10 +70,8 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
 @tags_router.get('/search/tag')
 async def get_products_by_tags(tags: List[str] = Query(None),
                                previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
-    products = await tag_queries.get_products_by_tags(tags, previous_id)
-    previous_id = get_previous_id(products)
+    products = await tag_queries.get_products_by_tags(tags)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'products': products,
-        'previous_id': previous_id,
     })

@@ -3,6 +3,7 @@ import logging
 import aioredis
 
 from app.db.db import DB
+from app.settings import HASH_EXPIRE
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +31,9 @@ class Redis:
 
 
     @classmethod
-    async def get_product_ids_by_tags(cls,tags: list[str]):
+    async def get_product_ids_by_tags(cls,tags: list[int]):
         product_ids = await cls.con.sinter(tags)
-        return product_ids
+        return [int(x) for x in product_ids]
 
     @classmethod
     async def add_tag_to_product(cls,tag_id,product_id):
@@ -42,3 +43,10 @@ class Redis:
     async def remove_tag_from_product(cls,tag_id,product_id):
         await cls.con.srem(tag_id,product_id)
 
+    @classmethod
+    async def set_hash(cls,hash_name: str, hash_value: str):
+        await cls.con.set(hash_name,hash_value,HASH_EXPIRE)
+
+    @classmethod
+    async def get_hash(cls,hash_name:str):
+        return await cls.con.get(hash_name)
