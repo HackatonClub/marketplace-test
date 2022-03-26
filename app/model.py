@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
-from fastapi import Query
+from fastapi import File, Form, Query, UploadFile
 from pydantic import BaseModel, Field
 
 
@@ -58,17 +58,13 @@ class FavouriteOfUser(BaseModel):
     customer_name: str = Field(None, title='Имя покупателя')
 
 
-class ProductAdd(BaseModel):
-    name: str = Field(None, title='Название продукта')
-    discription: str = Field(None, title='Описание продукта')
-    price: int = Field(None, title='Цена продукта', gt=0)
-
-
 class ProductUp(BaseModel):
     product_id: int = Query(None, title='Id продукта', gt=0)
     name: str = Field(None, title='Название продукта')
     discription: str = Field(None, title='Описание продукта')
     price: int = Field(None, title='Цена продукта', gt=0)
+    urls: dict = Field(None, title='photoid : image_name')
+    tag_id: dict = Field(None, title='Tagid : id')
 
 
 class Review(BaseModel):
