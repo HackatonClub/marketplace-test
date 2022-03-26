@@ -8,7 +8,6 @@ from app.model import Tag
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
-
 tags_router = APIRouter(tags=["Tags"])
 
 
