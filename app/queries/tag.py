@@ -33,9 +33,10 @@ async def remove_tag(tag_name: str):
     tag_id = await get_tag_id(tag_name)
     sql = 'delete from tags_product where tag_id = $1'
     await DB.execute(sql, tag_id)
-    await Redis.del_tag(tag_id)
     sql = 'delete from tags where id = $1'
     await DB.execute(sql, tag_id)
+    await Redis.del_tag(tag_name)
+
 
 
 async def get_all_tags(previous_id: int):
@@ -71,8 +72,8 @@ async def get_tag_id(tag_name: str):
     if not tag_id:
         sql = 'select id from tags where name = $1'
         tag_id = await DB.fetchval(sql, tag_name)
-    if not tag_id:
-        raise NotFoundException('Тэг отсутсвует')
+        if not tag_id:
+            raise NotFoundException('Тэг отсутсвует')
     await Redis.set_hash(tag_name, tag_id)
     return int(tag_id)
 
