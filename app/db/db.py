@@ -9,8 +9,6 @@ from asyncpg import Record
 from app.exceptions import InternalServerError
 from app.settings import DATABASE_URL
 
-
-
 logger = logging.getLogger(__name__)
 
 

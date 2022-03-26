@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 
 from app.db.db import DB
 from app.db.redis import Redis
-from app.exceptions import BadRequest, CustomerNotFoundException, InternalServerError, NotFoundException
+from app.exceptions import (BadRequest, CustomerNotFoundException,
+                            InternalServerError, NotFoundException)
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
 from app.routers.favourite import favourite_router
