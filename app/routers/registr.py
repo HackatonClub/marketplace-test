@@ -14,7 +14,7 @@ registr_router = APIRouter(tags=["Registration"])
 
 
 @registr_router.post('/registration')
-async def registration_user(request: OAuth2PasswordRequestForm = Depends()):
+async def registration_user(request: OAuth2PasswordRequestForm = Depends()) -> dict:
     user_uid = await registr.check_login(request.username)
     if user_uid:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

@@ -1,10 +1,12 @@
+from asyncpg import Record
+
 from app.db.db import DB
 from app.exceptions import BadRequest, CustomerNotFoundException
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 
 
-async def add_product_to_cart(customer_name: str, product_id: int, product_num: int):
+async def add_product_to_cart(customer_name: str, product_id: int, product_num: int) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -13,7 +15,7 @@ async def add_product_to_cart(customer_name: str, product_id: int, product_num: 
         raise BadRequest('Продукт уже добавлен в корзину')
 
 
-async def update_product_in_cart(customer_name: str, product_id: int, product_num: int):
+async def update_product_in_cart(customer_name: str, product_id: int, product_num: int) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -22,7 +24,7 @@ async def update_product_in_cart(customer_name: str, product_id: int, product_nu
         raise BadRequest('Такого продукта не существует')
 
 
-async def delete_product_from_cart(customer_name: str, product_id: int):
+async def delete_product_from_cart(customer_name: str, product_id: int) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -31,7 +33,7 @@ async def delete_product_from_cart(customer_name: str, product_id: int):
         raise BadRequest('Уже удален из корзины')
 
 
-async def get_cart_products(customer_name: str, previous_id: int):
+async def get_cart_products(customer_name: str, previous_id: int) -> list[Record]:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException

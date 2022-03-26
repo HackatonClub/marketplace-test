@@ -1,12 +1,12 @@
+from asyncpg import Record
+
 from app.db.db import DB
 from app.exceptions import BadRequest, CustomerNotFoundException, NotFoundException
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 
-# TODO: Добавить динамику в добавление и удаление, но тогда код станет менее стабильным
 
-
-async def add_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
+async def add_review_to_product(customer_name: str, product_id: int, body: str, rating: int) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -15,7 +15,7 @@ async def add_review_to_product(customer_name: str, product_id: int, body: str, 
     await update_product_dynamic_data(product_id)
 
 
-async def delete_review_from_product(customer_name: str, product_id: int):
+async def delete_review_from_product(customer_name: str, product_id: int) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -25,7 +25,7 @@ async def delete_review_from_product(customer_name: str, product_id: int):
         raise NotFoundException('Отзыв уже удалён')
 
 
-async def update_review_to_product(customer_name: str, product_id: int, body: str, rating: int):
+async def update_review_to_product(customer_name: str, product_id: int, body: str, rating: int) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -35,7 +35,7 @@ async def update_review_to_product(customer_name: str, product_id: int, body: st
     await update_product_dynamic_data(product_id)
 
 
-async def update_product_dynamic_data(product_id: int):
+async def update_product_dynamic_data(product_id: int) -> None:
     sql = "select sum(rating),count(customer_id) from review where product_id = $1"
     temp = await DB.fetchrow(sql, product_id)
     if temp['sum'] is None:
@@ -47,7 +47,7 @@ async def update_product_dynamic_data(product_id: int):
         raise BadRequest('Нет такого продукта')
 
 
-async def get_reviews_to_product(product_id: int, previous_id: int):
+async def get_reviews_to_product(product_id: int, previous_id: int) -> list[Record]:
     sql = """   SELECT r.body,
                        r.rating,
                        c.name,

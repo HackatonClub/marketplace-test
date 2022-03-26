@@ -1,10 +1,12 @@
+from asyncpg import Record
+
 from app.db.db import DB
 from app.exceptions import BadRequest, CustomerNotFoundException
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 
 
-async def add_favourite(name: str, product_id: int):
+async def add_favourite(name: str, product_id: int) -> None:
     customer_id = await get_customer_id(name)
     if not customer_id:
         raise CustomerNotFoundException
@@ -13,13 +15,13 @@ async def add_favourite(name: str, product_id: int):
         raise BadRequest('Продукт уже добавлен в избранное')
 
 
-async def remove_favourite(customer_name: str, product_id: int):
+async def remove_favourite(customer_name: str, product_id: int) -> None:
     sql = 'delete from favourite where product_id = $1 and customer_id in (select id from customer where name = $2)'
     if not await DB.execute(sql, product_id, customer_name):
         raise BadRequest('Уже удален из избранного')
 
 
-async def get_favourites(customer_name: str, previous_id: int):
+async def get_favourites(customer_name: str, previous_id: int) -> list[Record]:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException

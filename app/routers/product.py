@@ -22,7 +22,7 @@ async def add_product(name: str = Form(..., title='Название продук
                       discription: str = Form(..., title='Описание продукта', max_length=350),
                       price: int = Form(..., title='Цена продукта', gt=0),
                       tag_names: List[str] = Query(..., title='Тэги продукта'),
-                      upload_files: List[UploadFile] = File(...)):
+                      upload_files: List[UploadFile] = File(...)) -> JSONResponse:
     urls = await downloadfilesproduct(upload_files)
     product_tags = {'tags': tag_names}
     product_id = await product.add_product(name, discription, price, product_tags, urls)
@@ -35,7 +35,7 @@ async def add_product(name: str = Form(..., title='Название продук
 
 
 @product_router.delete('/product')
-async def delete_product(product_id: int = Query(None, description='Id продукта')):
+async def delete_product(product_id: int = Query(None, description='Id продукта')) -> JSONResponse:
     urls = await photo.get_name_photo_for_delete(product_id)
     urls = json.loads(urls.replace("'", '"'))
     for image_name in urls.values():
@@ -54,7 +54,7 @@ async def delete_product(product_id: int = Query(None, description='Id прод�
 
 
 @product_router.put('/product/{product_id}')
-async def update_product(produ: ProductUp):
+async def update_product(produ: ProductUp) -> JSONResponse:
     print(produ.tag_id)
     if produ.urls:
         urls = await photo.get_name_photo_for_delete(produ.product_id)
@@ -62,11 +62,7 @@ async def update_product(produ: ProductUp):
         for image_name in urls.values():
             await deletfilesproduct(image_name)
 
-    if not await product.update_product(produ):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Такого продукта не существует',
-        )
+    await product.update_product(produ)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
