@@ -1,12 +1,14 @@
+
 from app.db.db import DB
-from app.model import ProductAdd, ProductUp
+from app.model import ProductUp
+import json
 
 
-async def add_product(product: ProductAdd):
+async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict):
 
-    sql = """  INSERT INTO product(name, description, price, avg_rating, num_reviews)
-                VALUES ($1,$2,$3,0,0)  """
-    await DB.execute(sql, product.name, product.discription, product.price)
+    sql = """  INSERT INTO product(name, description, price, avg_rating, num_reviews, url ,tag_id)
+                VALUES ($1,$2,$3,0,0, $4 ::jsonb, $5 ::jsonb)  """
+    await DB.execute(sql, name, description, price, json.dumps(urls), json.dumps(tag_id))
 
 
 async def delete_product(product_id: int):
@@ -18,29 +20,27 @@ async def delete_product(product_id: int):
     await DB.execute(sql)
 
 
-async def update_product(product: ProductUp):
-    sql = """UPDATE product
-             SET name = $1,
-                 description = $2,
-                 price = $3
-             WHERE id = $4  """
-    return await DB.execute(sql, product.name, product.discription, product.price, product.product_id)
+async def update_product(prod: ProductUp):
+    sql = '''  UPDATE product
+                SET name = coalesce($1, name),
+                    description = coalesce($2, description),
+                    price = coalesce($3, price),
+                    url = coalesce( NULLIF($4, 'null' ::jsonb), url ),
+                    tag_id  = coalesce( NULLIF($5, 'null' :: jsonb), tag_id)
+                WHERE product.id =$6; '''
+    return await DB.execute(sql, prod.name, prod.discription, prod.price,
+                            json.dumps(prod.urls), json.dumps(prod.tag_id), prod.product_id)
 
 
 async def get_info_product(product_id: int):
-    sql = """ SELECT array
-                (SELECT url
-                FROM product_photo
-                WHERE product_photo.product_id=$1) AS image,
-                    array
-                (SELECT tag_id
-                FROM tags_product
-                WHERE tags_product.product_id=$1) AS tags_id,
+    sql = """   SELECT
                     product.name,
                     product.description,
                     product.price,
                     product.avg_rating,
-                    product.num_reviews
+                    product.num_reviews,
+                    product.url,
+                    product.tag_id
                 FROM product
-                WHERE product.id=3"""
-    return await DB.fetch(sql, product_id)
+                WHERE product.id=$1;"""
+    return await DB.fetchrow(sql, product_id)

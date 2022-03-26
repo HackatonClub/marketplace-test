@@ -6,6 +6,7 @@ from app.model import Favourite
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
+
 favourite_router = APIRouter(tags=["Favourite"])
 
 

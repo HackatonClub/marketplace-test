@@ -17,7 +17,9 @@ create table product
     description varchar(256),
     price       integer,
     avg_rating  float,
-    num_reviews integer
+    num_reviews integer,
+    url jsonb,
+    tag_id jsonb,
 );
 
 create table tags
@@ -28,23 +30,7 @@ create table tags
     name varchar(256) not null
         unique
 );
-create table tags_product
-(
-    id         serial
-        constraint tags_product_pk
-            primary key,
-    product_id integer references product (id) on delete cascade,
-    tag_id jsonb
-);
 
-create table product_photo
-(
-    id         serial
-        constraint product_photo_pk
-            primary key,
-    product_id integer references product (id) on delete cascade,
-    url jsonb
-);
 
 create table cart_product
 (
