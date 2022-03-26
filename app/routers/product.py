@@ -8,6 +8,8 @@ import json
 
 import app.queries.photo as photo
 import app.queries.product as product
+import app.queries.tag as tag_queries
+from app.exceptions import BadRequest
 from app.routers.download import downloadfilesproduct
 from app.routers.delete import deletfilesproduct
 
@@ -19,14 +21,14 @@ product_router = APIRouter(tags=["Product"])
 async def add_product(name: str = Form(..., title='Название продукта', max_length=50),
                       discription: str = Form(..., title='Описание продукта', max_length=350),
                       price: int = Form(..., title='Цена продукта', gt=0),
-                      tag_id: str = Form(..., title='Тэги продукта'),
+                      tag_names: List[str] = Query(..., title='Тэги продукта'),
                       upload_files: List[UploadFile] = File(...)):
     urls = await downloadfilesproduct(upload_files)
-    # TODO: чтото сделать с тэгами
-    # тэги словарь
-    tag_id1 = {}
-    tag_id1["asdf"] = tag_id
-    print(await product.add_product(name, discription, price, tag_id1, urls))
+    product_tags = {'tags': tag_names}
+    product_id = await product.add_product(name, discription, price, product_tags, urls)
+    if not product_id:
+        raise BadRequest('Продукт уже существует')
+    await tag_queries.add_tags_to_product_by_id(tag_names,product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })

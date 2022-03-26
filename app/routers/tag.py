@@ -68,7 +68,7 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
 
 
 @tags_router.get('/search/tag')
-async def get_products_by_tags(tags: List[str] = Query(None),
+async def get_products_by_tags(tags: List[str] = Query(None,title='Список тэгов'),
                                previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
     products = await tag_queries.get_products_by_tags(tags)
     products = format_records(products)

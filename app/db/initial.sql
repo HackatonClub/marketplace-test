@@ -19,7 +19,7 @@ create table product
     avg_rating  float,
     num_reviews integer,
     url jsonb,
-    tag_id jsonb,
+    tag_id jsonb
 );
 
 create table tags
@@ -31,6 +31,11 @@ create table tags
         unique
 );
 
+create table tags_product
+(
+    tag_id integer references tags (id),
+    product_id integer references product (id)
+);
 
 create table cart_product
 (

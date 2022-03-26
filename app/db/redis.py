@@ -53,6 +53,13 @@ class Redis:
         await cls.con.sadd(tag_id,product_id)
 
     @classmethod
+    async def add_tags_to_product(cls,tag_ids,product_id):
+        if not cls.con:
+            return
+        for i in tag_ids:
+            await cls.con.sadd(i, product_id)
+
+    @classmethod
     async def remove_tag_from_product(cls,tag_id,product_id):
         if not cls.con:
             return

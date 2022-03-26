@@ -7,8 +7,8 @@ import json
 async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict):
 
     sql = """  INSERT INTO product(name, description, price, avg_rating, num_reviews, url ,tag_id)
-                VALUES ($1,$2,$3,0,0, $4 ::jsonb, $5 ::jsonb)  """
-    await DB.execute(sql, name, description, price, json.dumps(urls), json.dumps(tag_id))
+                VALUES ($1,$2,$3,0,0, $4 ::jsonb, $5 ::jsonb)  returning id"""
+    return await DB.fetchval(sql, name, description, price, json.dumps(urls), json.dumps(tag_id))
 
 
 async def delete_product(product_id: int):

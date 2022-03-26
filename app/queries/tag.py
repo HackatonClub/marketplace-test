@@ -21,6 +21,18 @@ async def add_tag_to_product_by_id(tag_name: str, product_id: int):
     await Redis.add_tag_to_product(tag_id,product_id)
 
 
+async def add_tags_to_product_by_id(tag_names: list[str], product_id: int):
+    sql = 'insert into tags (name) values ($1) on conflict do nothing;'
+    add_tags = [(x,) for x in tag_names]
+    await DB.executemany(sql,add_tags)
+    tag_ids = await get_multiple_tag_ids(tag_names)
+    tags_products = [(product_id,x) for x in tag_ids]
+    sql = 'insert into tags_product(product_id, tag_id) values ($1,$2);'
+    if not await DB.executemany(sql, tags_products):
+        raise BadRequest('Тэг уже присвоен или не существует такого продукта')
+    await Redis.add_tags_to_product(tag_ids,product_id)
+
+
 async def remove_tag_from_product_by_id(tag_name: str, product_id: int):
     tag_id = await get_tag_id(tag_name)
     sql = 'delete from tags_product where product_id = $1 and tag_id = $2'

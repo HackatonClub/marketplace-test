@@ -51,6 +51,16 @@ class DB:
         return True
 
     @classmethod
+    async def executemany(cls, sql, *args):
+        try:
+            await DB.con.executemany(sql, *args)
+        except UniqueViolationError:
+            return False
+        except PostgresError as error:
+            raise InternalServerError(str(error)) from error
+        return True
+
+    @classmethod
     async def fetch(cls, sql, *args):
         try:
             return await DB.con.fetch(sql, *args)
