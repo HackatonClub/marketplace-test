@@ -1,5 +1,4 @@
 from asyncpg import Record
-
 from app.db.db import DB
 from app.exceptions import BadRequest, CustomerNotFoundException
 from app.queries.customer import get_customer_id

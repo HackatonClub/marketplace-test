@@ -2,10 +2,11 @@
 import pathlib
 import json
 from typing import List
-import app.queries.photo as photo
 
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import FileResponse, JSONResponse
+
+from app.queries import photo
 from app.routers.delete import deletfilesproduct
 from app.routers.download import downloadfilesproduct
 

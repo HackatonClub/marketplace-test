@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import Optional
 
-from fastapi import File, Form, Query, UploadFile
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 

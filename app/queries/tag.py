@@ -4,7 +4,6 @@ from app.db.db import DB
 from app.db.redis import Redis
 from app.exceptions import BadRequest, NotFoundException
 from app.settings import ITEMS_PER_PAGE
-from app.utils.extracter import get_col_values
 
 
 async def add_new_tag(name: str) -> None:
@@ -106,8 +105,8 @@ async def get_tag_id(tag_name: str) -> int:
     return int(tag_id)
 
 async def get_multiple_tag_ids(tag_names: list[str]) -> list[int]:
-    found = list()
-    not_found = list()
+    found = []
+    not_found = []
     for i in tag_names:
         tag_id = await Redis.get_hash(i)
         if not tag_id:

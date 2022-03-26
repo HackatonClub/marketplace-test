@@ -1,14 +1,13 @@
 
-
+import json
 from typing import List
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from app.model import ProductUp
-import json
 
-import app.queries.photo as photo
-import app.queries.product as product
-import app.queries.tag as tag_queries
+from app.queries import photo
+from app.queries import product
+from app.queries import tag as tag_queries
 from app.exceptions import BadRequest
 from app.routers.download import downloadfilesproduct
 from app.routers.delete import deletfilesproduct

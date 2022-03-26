@@ -14,7 +14,9 @@ class Redis:
     @classmethod
     async def connect_redis(cls) -> None:
         try:
-            cls.con = aioredis.from_url(f'redis://:{REDIS_PASSWORD}@{REDIS_HOSTNAME}:{REDIS_PORT}', encoding="utf-8", decode_responses=True)
+            cls.con = aioredis.from_url(
+                f'redis://:{REDIS_PASSWORD}@{REDIS_HOSTNAME}:{REDIS_PORT}',
+                encoding="utf-8", decode_responses=True)
         except Exception as error:
             logger.error(error)
         finally:

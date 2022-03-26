@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.param_functions import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
-import app.queries.registr as registr
+from app.queries import registr
 from app.auth.hash import get_password_hash
 from app.auth.JWTtoken import create_access_token
 from app.model import User

@@ -1,9 +1,9 @@
+import json
 from asyncpg import Record
 
 from app.db.db import DB
 from app.model import ProductUp
 from app.exceptions import BadRequest
-import json
 
 
 async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict) -> None:
