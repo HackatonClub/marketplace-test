@@ -34,7 +34,8 @@ create table tags
 create table tags_product
 (
     tag_id integer references tags (id),
-    product_id integer references product (id)
+    product_id integer references product (id),
+    tag_ids jsonb
 );
 
 create table cart_product
