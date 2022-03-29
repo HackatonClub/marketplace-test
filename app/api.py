@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from app.db.db import DB
+from app.db.redis import Redis
 from app.exceptions import (BadRequest, CustomerNotFoundException,
                             InternalServerError, NotFoundException)
 from app.routers.cart import cart_router
@@ -15,6 +16,7 @@ from app.routers.registr import registr_router
 from app.routers.review import review_router
 from app.routers.tag import tags_router
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,17 +24,19 @@ app = FastAPI(title='Marketplace')
 
 
 @app.on_event('startup')
-async def startup():
+async def startup() -> None:
     await DB.connect_db()
+    await Redis.connect_redis()
+    await Redis.load_tags()
 
 
 @app.on_event('shutdown')
-async def shutdown():
+async def shutdown() -> None:
     await DB.disconnect_db()
-
+    await Redis.disconnect_redis()
 
 @app.exception_handler(NotFoundException)
-async def not_found_error_handler(request: Request, exception: NotFoundException):
+async def not_found_error_handler(request: Request, exception: NotFoundException) -> JSONResponse:
     del request
     logger.error(exception.error)
     return JSONResponse(
@@ -42,7 +46,7 @@ async def not_found_error_handler(request: Request, exception: NotFoundException
 
 
 @app.exception_handler(CustomerNotFoundException)
-async def customer_not_found_error_handler(request: Request, exception: CustomerNotFoundException):
+async def customer_not_found_error_handler(request: Request, exception: CustomerNotFoundException) -> JSONResponse:
     del request
     logger.error(exception.error)
     return JSONResponse(
@@ -52,7 +56,7 @@ async def customer_not_found_error_handler(request: Request, exception: Customer
 
 
 @app.exception_handler(InternalServerError)
-async def internal_server_error_handler(request: Request, exception: InternalServerError):
+async def internal_server_error_handler(request: Request, exception: InternalServerError) -> JSONResponse:
     del request
     logger.error(exception.error)
     return JSONResponse(
@@ -62,7 +66,7 @@ async def internal_server_error_handler(request: Request, exception: InternalSer
 
 
 @app.exception_handler(BadRequest)
-async def bad_request_handler(request: Request, exception: BadRequest):
+async def bad_request_handler(request: Request, exception: BadRequest) -> JSONResponse:
     del request
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,

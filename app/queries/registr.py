@@ -1,8 +1,10 @@
+from asyncpg import Record
+
 from app.db.db import DB
 from app.model import User
 
 
-async def check_login(login: str):
+async def check_login(login: str) -> Record:
     sql = f"""   SELECT id
                 FROM customer
                 WHERE name = '{login}';"""
@@ -10,7 +12,7 @@ async def check_login(login: str):
     return userlogin
 
 
-async def create_user(user: User):
+async def create_user(user: User) -> None:
 
     sql = f"""  INSERT INTO customer (name, password)
                 VALUES ('{user.login}','{user.password}');  """

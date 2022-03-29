@@ -1,15 +1,18 @@
+from asyncpg import Record
+
 from app.db.db import DB
+from app.db.redis import Redis
 from app.exceptions import BadRequest, CustomerNotFoundException
 from app.settings import ITEMS_PER_PAGE
 
 
-async def add_customer(name: str, password: str):
+async def add_customer(name: str, password: str) -> None:
     sql = "insert into customer(name,password) values ($1,$2)"
     if not await DB.execute(sql, name, password):
         raise BadRequest('Покупатель с таким именем существует')
 
 
-async def delete_customer(customer_name: str):
+async def delete_customer(customer_name: str) -> None:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException()
@@ -22,13 +25,20 @@ async def delete_customer(customer_name: str):
     sql = "delete from customer where id = $1;"
     if not await DB.execute(sql, customer_id):
         raise BadRequest('Покупатель уже удален')
+    await Redis.del_tag(customer_name)
 
 
-async def get_customer_id(customer_name: str):
-    sql = "select id from customer where name = $1"
-    return await DB.fetchval(sql, customer_name)
+async def get_customer_id(customer_name: str) -> list[Record]:
+    customer_id = await Redis.get_hash(customer_name)
+    if not customer_id:
+        sql = "select id from customer where name = $1"
+        customer_id = await DB.fetchval(sql, customer_name)
+        if not customer_id:
+            raise CustomerNotFoundException()
+    await Redis.set_hash(customer_name, customer_id)
+    return int(customer_id)
 
 
-async def get_all_customers(previous_id: int):
+async def get_all_customers(previous_id: int) -> list[Record]:
     sql = 'select name,id as previous_id from customer where id > $1 limit $2'
     return await DB.fetch(sql, previous_id, ITEMS_PER_PAGE)

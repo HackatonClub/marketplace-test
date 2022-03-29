@@ -10,7 +10,7 @@ cart_router = APIRouter(tags=["Cart"])
 
 
 @cart_router.post('/customer/cart')
-async def add_product_to_cart(cart: Cart):
+async def add_product_to_cart(cart: Cart) -> JSONResponse:
     await cart_queries.add_product_to_cart(cart.customer_name, cart.product_id, cart.product_num)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -18,7 +18,7 @@ async def add_product_to_cart(cart: Cart):
 
 
 @cart_router.put('/customer/cart')
-async def update_product_in_cart(cart: Cart):
+async def update_product_in_cart(cart: Cart) -> JSONResponse:
     await cart_queries.update_product_in_cart(cart.customer_name, cart.product_id, cart.product_num)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -26,7 +26,7 @@ async def update_product_in_cart(cart: Cart):
 
 
 @cart_router.delete('/customer/cart')
-async def delete_favourite(cart: CartDelete):
+async def delete_favourite(cart: CartDelete) -> JSONResponse:
     if not await cart_queries.delete_product_from_cart(cart.customer_name, cart.product_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -39,7 +39,7 @@ async def delete_favourite(cart: CartDelete):
 
 @cart_router.get('/customer/cart')
 async def get_customers(customer_name: str = Query(None, description='Имя покупателя'),
-                        previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
+                        previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)) -> JSONResponse:
     products = await cart_queries.get_cart_products(customer_name, previous_id)
     previous_id = get_previous_id(products)
     products = format_records(products)

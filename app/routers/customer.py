@@ -10,7 +10,7 @@ customer_router = APIRouter(tags=["Customer"])
 
 
 @customer_router.post('/customer')
-async def add_customer(customer: CutomerNew):
+async def add_customer(customer: CutomerNew) -> JSONResponse:
     await customer_queries.add_customer(customer.name, customer.password)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -18,7 +18,7 @@ async def add_customer(customer: CutomerNew):
 
 
 @customer_router.get('/customer')
-async def get_customers(previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
+async def get_customers(previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)) -> JSONResponse:
     customers = await customer_queries.get_all_customers(previous_id)
     previous_id = get_previous_id(customers)
     customers = format_records(customers)
@@ -29,7 +29,7 @@ async def get_customers(previous_id: int = Query(0, title='Индекс посл
 
 
 @customer_router.delete('/customer')
-async def delete_customer(customer: Customer):
+async def delete_customer(customer: Customer) -> JSONResponse:
     await customer_queries.delete_customer(customer.name)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

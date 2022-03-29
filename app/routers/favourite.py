@@ -11,7 +11,7 @@ favourite_router = APIRouter(tags=["Favourite"])
 
 
 @favourite_router.post('/customer/favourite')
-async def add_favourite(favourite: Favourite):
+async def add_favourite(favourite: Favourite) -> JSONResponse:
     await favourite_queries.add_favourite(favourite.customer_name, favourite.product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -19,7 +19,7 @@ async def add_favourite(favourite: Favourite):
 
 
 @favourite_router.delete('/customer/favourite')
-async def delete_favourite(favourite: Favourite):
+async def delete_favourite(favourite: Favourite) -> JSONResponse:
     await favourite_queries.remove_favourite(favourite.customer_name, favourite.product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -28,7 +28,7 @@ async def delete_favourite(favourite: Favourite):
 
 @favourite_router.get('/customer/favourite')
 async def get_customer_favourite(customer_name: str = Query(None, description='Имя покупателя'),
-                                 previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)):
+                                 previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)) -> JSONResponse:
     favourites = await favourite_queries.get_favourites(customer_name, previous_id)
     previous_id = get_previous_id(favourites)
     favourites = format_records(favourites)

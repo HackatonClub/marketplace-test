@@ -1,7 +1,9 @@
+from asyncpg import Record
+
 from app.db.db import DB
 
 
-async def check_product(product_id: int):
+async def check_product(product_id: int) -> bool:
 
     sql = f""" SELECT id
                FROM product
@@ -21,14 +23,14 @@ async def check_product(product_id: int):
         return False
 
 
-async def add_photo(product_id: int, url: dict):
+async def add_photo(product_id: int, url: dict) -> None:
 
     sql = """  INSERT INTO product_photo (product_id, url)
                 VALUES ($1, $2 ::json ); """
     return await DB.execute(sql, product_id, url)
 
 
-async def get_all_name_photo(product_id: int):
+async def get_all_name_photo(product_id: int) -> list[Record]:
 
     sql = """  SELECT url
                 FROM product
@@ -38,7 +40,7 @@ async def get_all_name_photo(product_id: int):
     return photo_name
 
 
-async def delete_photo_by_name(product_id: int, key: str):
+async def delete_photo_by_name(product_id: int, key: str) -> None:
 
     sql = """select product.url ->$1 from product where id=$2;"""
     image_name = await DB.fetchval(sql, key, product_id)
@@ -50,7 +52,7 @@ async def delete_photo_by_name(product_id: int, key: str):
     return image_name
 
 
-async def get_name_photo_for_delete(product_id: int):
+async def get_name_photo_for_delete(product_id: int) -> list[Record]:
 
     sql = """  SELECT url
                 FROM product
