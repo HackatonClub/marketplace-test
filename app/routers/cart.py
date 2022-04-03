@@ -6,11 +6,16 @@ from app.model import Cart, CartDelete
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
+from app.model import User
+from fastapi.param_functions import Depends
+from app.auth.oauth2 import get_current_user
+
 cart_router = APIRouter(tags=["Cart"])
 
 
 @cart_router.post('/customer/cart')
-async def add_product_to_cart(cart: Cart) -> JSONResponse:
+async def add_product_to_cart(cart: Cart, current_user: User = Depends(get_current_user)) -> JSONResponse:
+    print(current_user)
     await cart_queries.add_product_to_cart(cart.customer_name, cart.product_id, cart.product_num)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

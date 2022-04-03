@@ -4,12 +4,11 @@ from app.db.db import DB
 from app.model import User
 
 
-async def check_login(login: str) -> Record:
-    sql = f"""   SELECT id
+async def check_auth(login: str) -> Record:
+    sql = f"""   SELECT id,name,password
                 FROM customer
-                WHERE name = '{login}';"""
-    userlogin = await DB.fetchrow(sql)
-    return userlogin
+                WHERE name = $1;"""
+    return await DB.fetchrow(sql,login)
 
 
 async def create_user(user: User) -> None:
