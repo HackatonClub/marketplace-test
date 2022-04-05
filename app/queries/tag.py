@@ -1,7 +1,7 @@
 from asyncpg import Record
-
 from app.db.db import DB
 from app.db.redis import Redis
+from app.utils.extracter import prepare_search_query, get_col_values
 from app.exceptions import BadRequest, NotFoundException
 from app.settings import ITEMS_PER_PAGE
 
@@ -69,29 +69,34 @@ async def get_tags_of_product_by_id(product_id: int, previous_id: int) -> list[R
     return await DB.fetch(sql, product_id, previous_id, ITEMS_PER_PAGE)
 
 
-async def get_products_by_tags(tags: list) -> list[Record]:
-    if not tags:
-        raise BadRequest('Множество тегов пусто')
-    tag_ids = await get_multiple_tag_ids(tags)
-    if not tag_ids:
-        raise BadRequest('Тэги не найдены')
-    if not Redis.check_connection():
-        sql = '''
-                            WITH ids AS
-                              (SELECT product_id,
-                                        count(tag_id)
-                                FROM tags_product AS t
-                                WHERE t.tag_id = ANY($1::int[])
-                                GROUP BY product_id)
-                            SELECT p.name,
-                                   p.id AS previous_id
-                            FROM product AS p
-                            JOIN ids ON p.id = ids.product_id
-                            WHERE ids.count = $2'''
-        return await DB.fetch(sql, tag_ids, len(tags))
-    product_ids = await Redis.get_product_ids_by_tags(tag_ids)
-    sql = 'select name from product where id = ANY($1::int[])'
-    return await DB.fetch(sql, product_ids)
+async def search_products(tags: list, search_query: str) -> list[Record]:
+    prepared_query = prepare_search_query(search_query)
+    sql = "select id from product where to_tsvector(description) @@ to_tsquery($1) or to_tsvector(name) @@ to_tsquery($1);"
+    product_ids_search = set(get_col_values(await DB.fetch(sql,prepared_query),'id'))
+    product_ids_tags = product_ids_search
+    if tags:
+        tag_ids = await get_multiple_tag_ids(tags)
+        if tag_ids:
+            if not Redis.check_connection():
+                sql = '''
+                                    WITH ids AS
+                                      (SELECT product_id,
+                                                count(tag_id)
+                                        FROM tags_product AS t
+                                        WHERE t.tag_id = ANY($1::int[])
+                                        GROUP BY product_id)
+                                    SELECT p.id
+                                    FROM product AS p
+                                    JOIN ids ON p.id = ids.product_id
+                                    WHERE ids.count = $2'''
+                product_ids_tags = set(get_col_values(await DB.fetch(sql, tag_ids, len(tags)),'id'))
+            else:
+                product_ids_tags = set(await Redis.get_product_ids_by_tags(tag_ids))
+    if not product_ids_tags:
+        product_ids_tags = product_ids_search
+    sql = 'select * from product where id = ANY($1::int[])'
+    product_ids = product_ids_search.intersection(product_ids_tags)
+    return await DB.fetch(sql, product_ids )
 
 
 async def get_tag_id(tag_name: str) -> int:

@@ -8,6 +8,10 @@ from app.model import Tag
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
+from app.model import User
+from fastapi.param_functions import Depends
+from app.auth.oauth2 import get_current_user
+
 tags_router = APIRouter(tags=["Tags"])
 
 
@@ -67,8 +71,8 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
 
 
 @tags_router.get('/search/tag')
-async def get_products_by_tags(tags: List[str] = Query(None,title='Список тэгов')) -> JSONResponse:
-    products = await tag_queries.get_products_by_tags(tags)
+async def get_products_by_tags(tags: List[str] = Query(None,title='Список тэгов'), search_query: str = Query(None,title='Строка поиска')) -> JSONResponse:
+    products = await tag_queries.search_products(tags,search_query)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'products': products,
