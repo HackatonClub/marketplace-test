@@ -8,3 +8,6 @@ def get_previous_id(raw_records: list[Record]) -> int:
 
 def get_col_values(raw_records: list[Record], col_name: str) -> list:
     return [x[col_name] for x in raw_records]
+
+def prepare_search_query(input: str) -> str:
+    return ' & '.join(input.split())

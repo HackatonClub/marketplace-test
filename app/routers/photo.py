@@ -12,6 +12,11 @@ from app.routers.delete import deletfilesproduct
 from app.routers.download import downloadfilesproduct
 
 import app.queries.photo as photo
+from app.queries.customer import get_user_role
+from app.model import User
+from fastapi.param_functions import Depends
+from app.auth.oauth2 import get_current_user
+from app.exceptions import ForbiddenException
 
 photo_router = APIRouter(tags=["Photo"])
 
@@ -41,8 +46,10 @@ async def get_product_photo_all_filename(product_id: int = Query(None, descripti
 
 @photo_router.delete('/product/{product_id}/photo')
 async def delete_product_photo(product_id: int = Query(None, description='Id продукта'),
-                               key: str = Query(None, description='photoid')) -> JSONResponse:
-
+                               key: str = Query(None, description='photoid'),  current_user: str = Depends(get_current_user)) -> JSONResponse:
+    role = await get_user_role(current_user)
+    if not role:
+        raise ForbiddenException
     image_name = await photo.delete_photo_by_name(product_id, key)
     image_name = json.loads(image_name.replace("'", '"'))
     if not image_name:
@@ -57,7 +64,10 @@ async def delete_product_photo(product_id: int = Query(None, description='Id п�
 
 
 @photo_router.post('/product/{product_id}/photo')
-async def add_photo(upload_files: List[UploadFile] = File(...)) -> JSONResponse:
+async def add_photo(upload_files: List[UploadFile] = File(...),  current_user: str = Depends(get_current_user)) -> JSONResponse:
+    role = await get_user_role(current_user)
+    if not role:
+        raise ForbiddenException
     await downloadfilesproduct(upload_files)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

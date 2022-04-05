@@ -20,7 +20,7 @@ async def registration_user(request: OAuth2PasswordRequestForm = Depends()) -> d
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="User with this login exists")
     if len(request.password) < 6 or request.password.isdigit():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Bad password, password shoud be better :)")
     request.password = get_password_hash(request.password)
     userreg = User(login=request.username, password=request.password)
@@ -36,9 +36,9 @@ async def registration_user(request: OAuth2PasswordRequestForm = Depends()) -> d
 async def login(request: OAuth2PasswordRequestForm = Depends()):
     user = await registr.check_auth(request.username)
     if not user:
-        raise HTTPException(status_code=400,detail='User doesnt exist')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='User doesnt exist')
     if not verify_password(request.password,user['password']):
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": request.username}, expires_delta=access_token_expires

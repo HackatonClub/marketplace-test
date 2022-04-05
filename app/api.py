@@ -6,7 +6,8 @@ from fastapi.responses import JSONResponse
 from app.db.db import DB
 from app.db.redis import Redis
 from app.exceptions import (BadRequest, CustomerNotFoundException,
-                            InternalServerError, NotFoundException)
+                            InternalServerError, NotFoundException,
+                            ForbiddenException)
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
 from app.routers.favourite import favourite_router
@@ -71,6 +72,14 @@ async def bad_request_handler(request: Request, exception: BadRequest) -> JSONRe
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={'details': exception.error},
+    )
+
+@app.exception_handler(ForbiddenException)
+async def bad_request_handler(request: Request, exception: ForbiddenException) -> JSONResponse:
+    del request
+    return JSONResponse(
+        status_code=status.HTTP_403_FORBIDDEN,
+        content={'details': 'Forbidden'},
     )
 
 

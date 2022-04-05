@@ -4,9 +4,11 @@ from fastapi import APIRouter, Path, Query, status
 from fastapi.responses import JSONResponse
 
 import app.queries.tag as tag_queries
+from app.queries.customer import get_user_role
 from app.model import Tag
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
+from app.exceptions import ForbiddenException
 
 from app.model import User
 from fastapi.param_functions import Depends
@@ -16,7 +18,10 @@ tags_router = APIRouter(tags=["Tags"])
 
 
 @tags_router.post('/tag')
-async def add_tag(tag: Tag) -> JSONResponse:
+async def add_tag(tag: Tag, current_user: str = Depends(get_current_user)) -> JSONResponse:
+    role = await get_user_role(current_user)
+    if not role:
+        raise ForbiddenException
     await tag_queries.add_new_tag(tag.tag_name)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -24,7 +29,10 @@ async def add_tag(tag: Tag) -> JSONResponse:
 
 
 @tags_router.post('/product/{product_id}/tag')
-async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0)) -> JSONResponse:
+async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0), current_user: str = Depends(get_current_user)) -> JSONResponse:
+    role = await get_user_role(current_user)
+    if not role:
+        raise ForbiddenException
     await tag_queries.add_tag_to_product_by_id(tag.tag_name, product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -32,7 +40,10 @@ async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID про
 
 
 @tags_router.delete('/tag')
-async def delete_tag(tag: Tag) -> JSONResponse:
+async def delete_tag(tag: Tag, current_user: str = Depends(get_current_user)) -> JSONResponse:
+    role = await get_user_role(current_user)
+    if not role:
+        raise ForbiddenException
     await tag_queries.remove_tag(tag.tag_name)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -40,7 +51,10 @@ async def delete_tag(tag: Tag) -> JSONResponse:
 
 
 @tags_router.delete('/product/{product_id}/tag')
-async def remove_tag_from_product(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0)) -> JSONResponse:
+async def remove_tag_from_product(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0), current_user: str = Depends(get_current_user)) -> JSONResponse:
+    role = await get_user_role(current_user)
+    if not role:
+        raise ForbiddenException
     await tag_queries.remove_tag_from_product_by_id(tag.tag_name, product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

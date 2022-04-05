@@ -7,9 +7,13 @@ from app.settings import ITEMS_PER_PAGE
 
 
 async def add_customer(name: str, password: str) -> None:
-    sql = "insert into customer(name,password) values ($1,$2)"
+    sql = "insert into users(name,password,role) values ($1,$2,0)"
     if not await DB.execute(sql, name, password):
         raise BadRequest('Покупатель с таким именем существует')
+
+async def get_user_role(name:str) -> int:
+    sql = "select role from users where name = $1"
+    return await DB.fetchval(sql,name)
 
 
 async def delete_customer(customer_name: str) -> None:
@@ -22,7 +26,7 @@ async def delete_customer(customer_name: str) -> None:
     await DB.execute(sql, customer_id)
     sql = "delete from favourite where customer_id = $1;"
     await DB.execute(sql, customer_id)
-    sql = "delete from customer where id = $1;"
+    sql = "delete from users where id = $1;"
     if not await DB.execute(sql, customer_id):
         raise BadRequest('Покупатель уже удален')
     await Redis.del_tag(customer_name)
@@ -31,7 +35,7 @@ async def delete_customer(customer_name: str) -> None:
 async def get_customer_id(customer_name: str) -> list[Record]:
     customer_id = await Redis.get_hash(customer_name)
     if not customer_id:
-        sql = "select id from customer where name = $1"
+        sql = "select id from users where name = $1"
         customer_id = await DB.fetchval(sql, customer_name)
         if not customer_id:
             raise CustomerNotFoundException()
@@ -40,5 +44,5 @@ async def get_customer_id(customer_name: str) -> list[Record]:
 
 
 async def get_all_customers(previous_id: int) -> list[Record]:
-    sql = 'select name,id as previous_id from customer where id > $1 limit $2'
+    sql = 'select name,id as previous_id from users where id > $1 limit $2'
     return await DB.fetch(sql, previous_id, ITEMS_PER_PAGE)

@@ -2,19 +2,15 @@ from fastapi import APIRouter, Query, status
 from fastapi.responses import JSONResponse
 
 import app.queries.customer as customer_queries
-from app.model import Customer, CutomerNew
+
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
 
+from app.model import User
+from fastapi.param_functions import Depends
+from app.auth.oauth2 import get_current_user
+
 customer_router = APIRouter(tags=["Customer"])
-
-
-@customer_router.post('/customer')
-async def add_customer(customer: CutomerNew) -> JSONResponse:
-    await customer_queries.add_customer(customer.name, customer.password)
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content={
-        'details': 'Executed',
-    })
 
 
 @customer_router.get('/customer')
@@ -29,8 +25,8 @@ async def get_customers(previous_id: int = Query(0, title='Индекс посл
 
 
 @customer_router.delete('/customer')
-async def delete_customer(customer: Customer) -> JSONResponse:
-    await customer_queries.delete_customer(customer.name)
+async def delete_customer(current_user: str = Depends(get_current_user)) -> JSONResponse:
+    await customer_queries.delete_customer(current_user)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })

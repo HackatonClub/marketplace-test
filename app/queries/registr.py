@@ -6,14 +6,14 @@ from app.model import User
 
 async def check_auth(login: str) -> Record:
     sql = f"""   SELECT id,name,password
-                FROM customer
+                FROM users
                 WHERE name = $1;"""
     return await DB.fetchrow(sql,login)
 
 
 async def create_user(user: User) -> None:
 
-    sql = f"""  INSERT INTO customer (name, password)
-                VALUES ('{user.login}','{user.password}');  """
+    sql = f"""  INSERT INTO users (name, password,role)
+                VALUES ('{user.login}','{user.password}',0);  """
 
     await DB.execute(sql)

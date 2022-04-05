@@ -2,32 +2,36 @@ from fastapi import APIRouter, Path, Query, status
 from fastapi.responses import JSONResponse
 
 import app.queries.review as review_queries
-from app.model import Customer, Product, Review
+from app.model import Product, Review
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
+
+from app.model import User
+from fastapi.param_functions import Depends
+from app.auth.oauth2 import get_current_user
 
 review_router = APIRouter(tags=["Review"])
 
 
 @review_router.post('/review')
-async def add_product_to_cart(review: Review) ->JSONResponse:
-    await review_queries.add_review_to_product(review.customer_name, review.product_id, review.body, review.rating)
+async def add_product_to_cart(review: Review, current_user: str = Depends(get_current_user)) ->JSONResponse:
+    await review_queries.add_review_to_product(current_user, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
 
 
 @review_router.put('/review')
-async def update_product_in_cart(review: Review) -> JSONResponse:
-    await review_queries.update_review_to_product(review.customer_name, review.product_id, review.body, review.rating)
+async def update_product_in_cart(review: Review, current_user: str = Depends(get_current_user)) -> JSONResponse:
+    await review_queries.update_review_to_product(current_user, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
 
 
 @review_router.delete('/review')
-async def delete_favourite(product: Product, customer: Customer) -> JSONResponse:
-    await review_queries.delete_review_from_product(customer.name, product.product_id)
+async def delete_favourite(product: Product, current_user: str = Depends(get_current_user)) -> JSONResponse:
+    await review_queries.delete_review_from_product(current_user, product.product_id)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Executed',
     })

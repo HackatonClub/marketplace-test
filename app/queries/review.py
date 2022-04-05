@@ -54,7 +54,7 @@ async def get_reviews_to_product(product_id: int, previous_id: int) -> list[Reco
                        c.name,
                        r.id AS previous_id
                 FROM review AS r
-                JOIN customer c ON r.customer_id = c.id
+                JOIN users c ON r.customer_id = c.id
                 WHERE product_id = $1
                 AND r.id > $2
                 LIMIT $3"""

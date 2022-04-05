@@ -19,3 +19,7 @@ class BadRequest(Exception):
     def __init__(self, error: str) -> None:
         super().__init__()
         self.error = error
+
+class ForbiddenException(Exception):
+    def __init__(self) -> None:
+        super().__init__()

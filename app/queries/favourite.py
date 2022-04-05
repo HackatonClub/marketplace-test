@@ -16,7 +16,7 @@ async def add_favourite(name: str, product_id: int) -> None:
 
 
 async def remove_favourite(customer_name: str, product_id: int) -> None:
-    sql = 'delete from favourite where product_id = $1 and customer_id in (select id from customer where name = $2)'
+    sql = 'delete from favourite where product_id = $1 and customer_id in (select id from users where name = $2)'
     if not await DB.execute(sql, product_id, customer_name):
         raise BadRequest('Уже удален из избранного')
 
