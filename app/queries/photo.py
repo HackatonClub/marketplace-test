@@ -42,7 +42,7 @@ async def get_all_name_photo(product_id: int) -> list[Record]:
 
 async def delete_photo_by_name(product_id: int, key: str) -> None:
 
-    sql = """select product.url ->$1 from product where id=$2;"""
+    sql = """SELECT product.url ->$1 FROM product WHERE id=$2;"""
     image_name = await DB.fetchval(sql, key, product_id)
     sql = """  UPDATE product
                 SET url = url - $1
