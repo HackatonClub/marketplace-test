@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Path, Query, status
+from fastapi.param_functions import Depends
 from fastapi.responses import JSONResponse
 
 import app.queries.review as review_queries
+from app.auth.oauth2 import get_current_user
 from app.model import Product, Review
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
-
-from app.model import User
-from fastapi.param_functions import Depends
-from app.auth.oauth2 import get_current_user
 
 review_router = APIRouter(tags=["Review"])
 

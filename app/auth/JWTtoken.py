@@ -28,5 +28,5 @@ def verify_token(token: str, credentails_exception):
         token_data = TokenData(login=login)
 
     except JWTError:
-        raise credentails_exception
+        raise credentails_exception from JWTError
     return token_data.login

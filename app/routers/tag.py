@@ -1,18 +1,16 @@
 from typing import List
 
 from fastapi import APIRouter, Path, Query, status
+from fastapi.param_functions import Depends
 from fastapi.responses import JSONResponse
 
 import app.queries.tag as tag_queries
-from app.queries.customer import get_user_role
+from app.auth.oauth2 import get_current_user
+from app.exceptions import ForbiddenException
 from app.model import Tag
+from app.queries.customer import get_user_role
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
-from app.exceptions import ForbiddenException
-
-from app.model import User
-from fastapi.param_functions import Depends
-from app.auth.oauth2 import get_current_user
 
 tags_router = APIRouter(tags=["Tags"])
 
@@ -29,7 +27,8 @@ async def add_tag(tag: Tag, current_user: str = Depends(get_current_user)) -> JS
 
 
 @tags_router.post('/product/{product_id}/tag')
-async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0), current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def product_add_tag(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0),
+                          current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
     if not role:
         raise ForbiddenException
@@ -51,7 +50,8 @@ async def delete_tag(tag: Tag, current_user: str = Depends(get_current_user)) ->
 
 
 @tags_router.delete('/product/{product_id}/tag')
-async def remove_tag_from_product(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0), current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def remove_tag_from_product(tag: Tag, product_id: int = Path(..., title='ID продукта', gt=0),
+                                  current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
     if not role:
         raise ForbiddenException
@@ -85,7 +85,8 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
 
 
 @tags_router.get('/search/tag')
-async def get_products_by_tags(tags: List[str] = Query(None,title='Список тэгов'), search_query: str = Query(None,title='Строка поиска')) -> JSONResponse:
+async def get_products_by_tags(tags: List[str] = Query(None,title='Список тэгов'),
+                               search_query: str = Query(None,title='Строка поиска')) -> JSONResponse:
     products = await tag_queries.search_products(tags,search_query)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={

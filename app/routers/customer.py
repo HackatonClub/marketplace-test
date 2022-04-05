@@ -1,14 +1,11 @@
 from fastapi import APIRouter, Query, status
+from fastapi.param_functions import Depends
 from fastapi.responses import JSONResponse
 
 import app.queries.customer as customer_queries
-
+from app.auth.oauth2 import get_current_user
 from app.utils.extracter import get_previous_id
 from app.utils.formatter import format_records
-
-from app.model import User
-from fastapi.param_functions import Depends
-from app.auth.oauth2 import get_current_user
 
 customer_router = APIRouter(tags=["Customer"])
 

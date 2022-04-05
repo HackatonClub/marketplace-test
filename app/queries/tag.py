@@ -2,7 +2,7 @@ from asyncpg import Record
 from app.db.db import DB
 from app.db.redis import Redis
 from app.utils.extracter import prepare_search_query, get_col_values
-from app.exceptions import BadRequest, NotFoundException, ForbiddenException
+from app.exceptions import BadRequest, NotFoundException
 from app.settings import ITEMS_PER_PAGE
 
 

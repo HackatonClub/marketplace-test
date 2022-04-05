@@ -1,20 +1,18 @@
 
 import json
 from typing import List
-from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
-from fastapi.responses import JSONResponse
-from app.model import ProductUp
 
-from app.queries import photo
-from app.queries import product
-from app.queries import tag as tag_queries
-from app.exceptions import BadRequest, ForbiddenException
-from app.routers.download import downloadfilesproduct
-from app.routers.delete import deletfilesproduct
-from app.queries.customer import get_user_role
-from app.model import User
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.param_functions import Depends
+from fastapi.responses import JSONResponse
+
 from app.auth.oauth2 import get_current_user
+from app.exceptions import BadRequest, ForbiddenException
+from app.model import ProductUp
+from app.queries import photo, product, tag as tag_queries
+from app.queries.customer import get_user_role
+from app.routers.delete import deletfilesproduct
+from app.routers.download import downloadfilesproduct
 
 product_router = APIRouter(tags=["Product"])
 
@@ -27,7 +25,7 @@ async def add_product(name: str = Form(..., title='Название продук
                       upload_files: List[UploadFile] = File(...),
                       current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
-    if not role:
+    if not role: # у покупателей role = 0, все остальные - админы
         raise ForbiddenException
     urls = await downloadfilesproduct(upload_files)
     product_tags = {'tags': tag_names}
@@ -41,7 +39,8 @@ async def add_product(name: str = Form(..., title='Название продук
 
 
 @product_router.delete('/product')
-async def delete_product(product_id: int = Query(None, description='Id продукта'),  current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def delete_product(product_id: int = Query(None, description='Id продукта'),
+                         current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
     if not role:
         raise ForbiddenException

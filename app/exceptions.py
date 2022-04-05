@@ -21,5 +21,6 @@ class BadRequest(Exception):
         self.error = error
 
 class ForbiddenException(Exception):
-    def __init__(self) -> None:
+    def __init__(self, error: str = 'Forbidden') -> None:
         super().__init__()
+        self.error = error

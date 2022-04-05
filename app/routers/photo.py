@@ -1,22 +1,19 @@
 
-import pathlib
 import json
+import pathlib
 from typing import List
 
-from fastapi import (APIRouter, File, HTTPException, Path, Query, UploadFile,
+from fastapi import (APIRouter, File, HTTPException, Query, UploadFile,
                      status)
+from fastapi.param_functions import Depends
 from fastapi.responses import FileResponse, JSONResponse
 
 from app.queries import photo
-from app.routers.delete import deletfilesproduct
-from app.routers.download import downloadfilesproduct
-
-import app.queries.photo as photo
-from app.queries.customer import get_user_role
-from app.model import User
-from fastapi.param_functions import Depends
 from app.auth.oauth2 import get_current_user
 from app.exceptions import ForbiddenException
+from app.queries.customer import get_user_role
+from app.routers.delete import deletfilesproduct
+from app.routers.download import downloadfilesproduct
 
 photo_router = APIRouter(tags=["Photo"])
 
@@ -46,7 +43,8 @@ async def get_product_photo_all_filename(product_id: int = Query(None, descripti
 
 @photo_router.delete('/product/{product_id}/photo')
 async def delete_product_photo(product_id: int = Query(None, description='Id продукта'),
-                               key: str = Query(None, description='photoid'),  current_user: str = Depends(get_current_user)) -> JSONResponse:
+                               key: str = Query(None, description='photoid'),
+                               current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
     if not role:
         raise ForbiddenException
@@ -64,7 +62,8 @@ async def delete_product_photo(product_id: int = Query(None, description='Id п�
 
 
 @photo_router.post('/product/{product_id}/photo')
-async def add_photo(upload_files: List[UploadFile] = File(...),  current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def add_photo(upload_files: List[UploadFile] = File(...),
+                    current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
     if not role:
         raise ForbiddenException

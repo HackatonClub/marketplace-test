@@ -75,11 +75,11 @@ async def bad_request_handler(request: Request, exception: BadRequest) -> JSONRe
     )
 
 @app.exception_handler(ForbiddenException)
-async def bad_request_handler(request: Request, exception: ForbiddenException) -> JSONResponse:
+async def forbidden_handler(request: Request, exception: ForbiddenException) -> JSONResponse:
     del request
     return JSONResponse(
         status_code=status.HTTP_403_FORBIDDEN,
-        content={'details': 'Forbidden'},
+        content={'details': exception.error},
     )
 
 

@@ -5,7 +5,7 @@ from app.model import User
 
 
 async def check_auth(login: str) -> Record:
-    sql = f"""   SELECT id,name,password
+    sql = """   SELECT id,name,password
                 FROM users
                 WHERE name = $1;"""
     return await DB.fetchrow(sql,login)
