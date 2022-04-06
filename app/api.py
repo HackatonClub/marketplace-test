@@ -1,13 +1,11 @@
 import logging
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.db.db import DB
 from app.db.redis import Redis
-from app.exceptions import (BadRequest, CustomerNotFoundException,
-                            InternalServerError, NotFoundException,
-                            ForbiddenException)
+from app.exceptions import (CommonException,InternalServerError)
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
 from app.routers.favourite import favourite_router
@@ -36,49 +34,17 @@ async def shutdown() -> None:
     await DB.disconnect_db()
     await Redis.disconnect_redis()
 
-@app.exception_handler(NotFoundException)
-async def not_found_error_handler(request: Request, exception: NotFoundException) -> JSONResponse:
+@app.exception_handler(CommonException)
+async def common_exception_handler(request: Request, exception: CommonException) -> JSONResponse:
     del request
     logger.error(exception.error)
+    if isinstance(exception, InternalServerError):
+        return JSONResponse(
+            status_code=exception.code,
+            content={'details': "Internal server error"},
+        )
     return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={'details': exception.error},
-    )
-
-
-@app.exception_handler(CustomerNotFoundException)
-async def customer_not_found_error_handler(request: Request, exception: CustomerNotFoundException) -> JSONResponse:
-    del request
-    logger.error(exception.error)
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND,
-        content={'details': exception.error},
-    )
-
-
-@app.exception_handler(InternalServerError)
-async def internal_server_error_handler(request: Request, exception: InternalServerError) -> JSONResponse:
-    del request
-    logger.error(exception.error)
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={'details': 'Internal server error'},
-    )
-
-
-@app.exception_handler(BadRequest)
-async def bad_request_handler(request: Request, exception: BadRequest) -> JSONResponse:
-    del request
-    return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content={'details': exception.error},
-    )
-
-@app.exception_handler(ForbiddenException)
-async def forbidden_handler(request: Request, exception: ForbiddenException) -> JSONResponse:
-    del request
-    return JSONResponse(
-        status_code=status.HTTP_403_FORBIDDEN,
+        status_code=exception.code,
         content={'details': exception.error},
     )
 
