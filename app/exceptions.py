@@ -1,26 +1,27 @@
-class NotFoundException(Exception):
-    def __init__(self, error: str) -> None:
+from fastapi import status
+
+class CommonException(Exception):
+    def __init__(self,code: int,error: str) -> None:
         super().__init__()
         self.error = error
+        self.code = code
 
+class NotFoundException(CommonException):
+    def __init__(self,error: str) -> None:
+        super().__init__(status.HTTP_404_NOT_FOUND,error)
 
 class CustomerNotFoundException(NotFoundException):
     def __init__(self) -> None:
         super().__init__('Нет такого покупателя')
 
-
-class InternalServerError(Exception):
+class InternalServerError(CommonException):
     def __init__(self, error: str) -> None:
-        super().__init__()
-        self.error = error
+        super().__init__(status.HTTP_500_INTERNAL_SERVER_ERROR,error)
 
-
-class BadRequest(Exception):
+class BadRequest(CommonException):
     def __init__(self, error: str) -> None:
-        super().__init__()
-        self.error = error
+        super().__init__(status.HTTP_400_BAD_REQUEST,error)
 
-class ForbiddenException(Exception):
-    def __init__(self, error: str = 'Forbidden') -> None:
-        super().__init__()
-        self.error = error
+class ForbiddenException(CommonException):
+    def __init__(self) -> None:
+        super().__init__(status.HTTP_403_FORBIDDEN,"Forbidden")
