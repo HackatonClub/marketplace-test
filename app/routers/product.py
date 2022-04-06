@@ -1,6 +1,6 @@
 
 import json
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.param_functions import Depends
@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from app.auth.oauth2 import get_current_user
 from app.exceptions import BadRequest, ForbiddenException
-from app.model import ProductUp
+from app.model import ProductUp, User
 from app.queries import photo, product, tag as tag_queries
 from app.queries.customer import get_user_role
 from app.routers.delete import deletfilesproduct
@@ -25,14 +25,14 @@ async def add_product(name: str = Form(..., title='Название продук
                       upload_files: List[UploadFile] = File(...),
                       current_user: str = Depends(get_current_user)) -> JSONResponse:
     role = await get_user_role(current_user)
-    if not role: # у покупателей role = 0, все остальные - админы
+    if not role:  # у покупателей role = 0, все остальные - админы
         raise ForbiddenException
     urls = await downloadfilesproduct(upload_files)
     product_tags = {'tags': tag_names}
     product_id = await product.add_product(name, discription, price, product_tags, urls)
     if not product_id:
         raise BadRequest('Продукт уже существует')
-    await tag_queries.add_tags_to_product_by_id(tag_names,product_id)
+    await tag_queries.add_tags_to_product_by_id(tag_names, product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
     })
@@ -80,7 +80,8 @@ async def update_product(produ: ProductUp,  current_user: str = Depends(get_curr
 
 
 @product_router.get('/product/{product_id}')
-async def get_product(product_id: int = Query(None, description='Id продукта')):
-
-    product_info = await product.get_info_product(product_id)
+async def get_product(product_id: int = Query(None, description='Id продукта'),
+                      current_user: str = Depends(get_current_user)):
+    
+    product_info = await product.get_info_product(product_id, current_user)
     return product_info
