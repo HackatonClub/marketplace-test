@@ -82,6 +82,6 @@ async def update_product(produ: ProductUp,  current_user: str = Depends(get_curr
 @product_router.get('/product/{product_id}')
 async def get_product(product_id: int = Query(None, description='Id продукта'),
                       current_user: str = Depends(get_current_user)):
-    
-    product_info = await product.get_info_product(product_id, current_user)
+    productlist = [product_id]
+    product_info = await product.get_info_product(productlist, current_user)
     return product_info

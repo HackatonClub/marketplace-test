@@ -36,7 +36,7 @@ async def update_product(prod: ProductUp) -> None:
         raise BadRequest('Такого продукта не существует')
 
 
-async def get_info_product(product_id: int, login: str) -> Record:
+async def get_info_product(product_id: list, login: str) -> Record:
     customer_id = await get_customer_id(login)
     sql = """   SELECT product.id,
                 product.name,
@@ -53,5 +53,5 @@ async def get_info_product(product_id: int, login: str) -> Record:
             FROM product
             FULL OUTER JOIN favourite ON favourite.customer_id = $2
             AND favourite.product_id = product.id
-            WHERE product.id=$1"""
+            WHERE product.id= ANY($1::int[])"""
     return await DB.fetchrow(sql, product_id, customer_id)

@@ -109,7 +109,7 @@ async def search_products(tags: list, search_query: str) -> list[Record]:
                FROM product
                WHERE id = ANY($1::int[])'''
     product_ids = product_ids_search.intersection(product_ids_tags)
-    return await DB.fetch(sql, product_ids )
+    return await DB.fetch(sql, product_ids)
 
 
 async def get_tag_id(tag_name: str) -> int:
