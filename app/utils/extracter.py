@@ -10,4 +10,4 @@ def get_col_values(raw_records: list[Record], col_name: str) -> list:
     return [x[col_name] for x in raw_records]
 
 def prepare_search_query(search_query: str) -> str:
-    return ' & '.join(search_query.split())
+    return  ':* & '.join(search_query.split()) + ':*'
