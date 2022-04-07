@@ -34,6 +34,7 @@ async def shutdown() -> None:
     await DB.disconnect_db()
     await Redis.disconnect_redis()
 
+
 @app.exception_handler(CommonException)
 async def common_exception_handler(request: Request, exception: CommonException) -> JSONResponse:
     del request

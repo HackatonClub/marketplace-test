@@ -4,6 +4,7 @@ from asyncpg import Record
 from app.db.db import DB
 from app.model import ProductUp
 from app.exceptions import BadRequest
+from app.queries.customer import get_customer_id
 
 
 async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict) -> None:
@@ -35,7 +36,8 @@ async def update_product(prod: ProductUp) -> None:
         raise BadRequest('Такого продукта не существует')
 
 
-async def get_info_product(product_id: int) -> Record:
+async def get_info_product(product_id: int, login: str) -> Record:
+    customer_id = await get_customer_id(login)
     sql = """   SELECT
                     product.name,
                     product.description,
@@ -43,7 +45,12 @@ async def get_info_product(product_id: int) -> Record:
                     product.avg_rating,
                     product.num_reviews,
                     product.url,
-                    product.tag_id
-                FROM product
-                WHERE product.id=$1;"""
-    return await DB.fetchrow(sql, product_id)
+                    product.tag_id,
+					Case
+						When  favourite.product_id = product.id then 'Yes'
+						Else 'No'
+						
+					End as Love 
+					
+                FROM product,favourite where product.id=$1 and favourite.customer_id = $2"""
+    return await DB.fetchrow(sql, product_id, customer_id)
