@@ -1,8 +1,5 @@
 
 import pathlib
-
-from fastapi import HTTPException, status
-
 from app.exceptions import ProductFileNotFoundException
 
 
