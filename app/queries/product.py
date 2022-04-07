@@ -38,19 +38,20 @@ async def update_product(prod: ProductUp) -> None:
 
 async def get_info_product(product_id: int, login: str) -> Record:
     customer_id = await get_customer_id(login)
-    sql = """   SELECT
-                    product.name,
-                    product.description,
-                    product.price,
-                    product.avg_rating,
-                    product.num_reviews,
-                    product.url,
-                    product.tag_id,
-					Case
-						When  favourite.product_id = product.id then 'Yes'
-						Else 'No'
-						
-					End as Love 
-					
-                FROM product,favourite where product.id=$1 and favourite.customer_id = $2"""
+    sql = """   SELECT product.id,
+                product.name,
+                product.description,
+                product.price,
+                product.avg_rating,
+                product.num_reviews,
+                product.url,
+                product.tag_id,
+                CASE
+                    WHEN favourite.product_id = product.id THEN 'Yes'
+                    ELSE 'No'
+                END AS Love
+            FROM product
+            FULL OUTER JOIN favourite ON favourite.customer_id = $2
+            AND favourite.product_id = product.id
+            WHERE product.id=$1"""
     return await DB.fetchrow(sql, product_id, customer_id)
