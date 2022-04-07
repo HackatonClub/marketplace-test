@@ -30,11 +30,3 @@ def verify_token(token: str, credentails_exception):
     except JWTError:
         raise credentails_exception from JWTError
     return token_data.login
-
-
-def verify_tokenNone(token: str):
-        playload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        login: str = playload.get("sub")
-        token_data = TokenData(login=login)
-        print(token_data)
-        return token_data.login

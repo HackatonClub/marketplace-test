@@ -12,11 +12,12 @@ async def add_customer(name: str, password: str) -> None:
     if not await DB.execute(sql, name, password):
         raise BadRequest('Покупатель с таким именем существует')
 
-async def get_user_role(name:str) -> int:
+
+async def get_user_role(name: str) -> int:
     sql = """ SELECT role
               FROM users
               WHERE name = $1"""
-    return await DB.fetchval(sql,name)
+    return await DB.fetchval(sql, name)
 
 
 async def delete_customer(customer_name: str) -> None:

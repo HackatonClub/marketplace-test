@@ -12,7 +12,7 @@ review_router = APIRouter(tags=["Review"])
 
 
 @review_router.post('/review')
-async def add_product_to_cart(review: Review, current_user: str = Depends(get_current_user)) ->JSONResponse:
+async def add_product_to_cart(review: Review, current_user: str = Depends(get_current_user)) -> JSONResponse:
     await review_queries.add_review_to_product(current_user, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

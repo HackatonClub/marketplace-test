@@ -38,7 +38,7 @@ async def update_product(prod: ProductUp) -> None:
 
 async def get_info_product(product_id: list, login: str) -> Record:
     customer_id = await get_customer_id(login)
-    sql = """   SELECT product.id,
+    sql = """SELECT 
                 product.name,
                 product.description,
                 product.price,
@@ -54,4 +54,4 @@ async def get_info_product(product_id: list, login: str) -> Record:
             FULL OUTER JOIN favourite ON favourite.customer_id = $2
             AND favourite.product_id = product.id
             WHERE product.id= ANY($1::int[])"""
-    return await DB.fetchrow(sql, product_id, customer_id)
+    return await DB.fetch(sql, product_id, customer_id)

@@ -8,7 +8,7 @@ async def check_auth(login: str) -> Record:
     sql = """   SELECT id,name,password
                 FROM users
                 WHERE name = $1;"""
-    return await DB.fetchrow(sql,login)
+    return await DB.fetchrow(sql, login)
 
 
 async def create_user(user: User) -> None:

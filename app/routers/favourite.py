@@ -12,7 +12,7 @@ favourite_router = APIRouter(tags=["Favourite"])
 
 
 @favourite_router.post('/customer/favourite')
-async def add_favourite(favourite: Favourite,current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def add_favourite(favourite: Favourite, current_user: str = Depends(get_current_user)) -> JSONResponse:
     await favourite_queries.add_favourite(current_user, favourite.product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -20,7 +20,7 @@ async def add_favourite(favourite: Favourite,current_user: str = Depends(get_cur
 
 
 @favourite_router.delete('/customer/favourite')
-async def delete_favourite(favourite: Favourite,current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def delete_favourite(favourite: Favourite, current_user: str = Depends(get_current_user)) -> JSONResponse:
     await favourite_queries.remove_favourite(current_user, favourite.product_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

@@ -1,6 +1,6 @@
 
 import json
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
 from fastapi.param_functions import Depends
@@ -8,11 +8,12 @@ from fastapi.responses import JSONResponse
 
 from app.auth.oauth2 import get_current_user
 from app.exceptions import BadRequest, ForbiddenException
-from app.model import ProductUp, User
+from app.model import ProductUp
 from app.queries import photo, product, tag as tag_queries
 from app.queries.customer import get_user_role
 from app.routers.delete import deletfilesproduct
 from app.routers.download import downloadfilesproduct
+from app.utils.formatter import format_records
 
 product_router = APIRouter(tags=["Product"])
 
@@ -81,7 +82,9 @@ async def update_product(produ: ProductUp,  current_user: str = Depends(get_curr
 
 @product_router.get('/product/{product_id}')
 async def get_product(product_id: int = Query(None, description='Id продукта'),
-                      current_user: str = Depends(get_current_user)):
+                      current_user: str = Depends(get_current_user)) -> JSONResponse:
     productlist = [product_id]
-    product_info = await product.get_info_product(productlist, current_user)
-    return product_info
+    product_info = format_records(await product.get_info_product(productlist, current_user))
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content={
+        'product': product_info,
+    })
