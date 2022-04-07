@@ -2,12 +2,12 @@
 import json
 from typing import List
 
-from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, File, Form, Query, UploadFile, status
 from fastapi.param_functions import Depends
 from fastapi.responses import JSONResponse
 
 from app.auth.oauth2 import get_current_user
-from app.exceptions import BadRequest, ForbiddenException
+from app.exceptions import BadRequest, ForbiddenException, ProductFileNotFoundException
 from app.model import ProductUp
 from app.queries import photo, product, tag as tag_queries
 from app.queries.customer import get_user_role
@@ -49,10 +49,7 @@ async def delete_product(product_id: int = Query(None, description='Id прод�
     urls = json.loads(urls.replace("'", '"'))
     for image_name in urls.values():
         if not image_name:
-            raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail='Файл не существует',
-                )
+            raise ProductFileNotFoundException
         await deletfilesproduct(image_name)
 
     await product.delete_product(product_id)

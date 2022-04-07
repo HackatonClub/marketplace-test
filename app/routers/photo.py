@@ -3,14 +3,14 @@ import json
 import pathlib
 from typing import List
 
-from fastapi import (APIRouter, File, HTTPException, Query, UploadFile,
+from fastapi import (APIRouter, File, Query, UploadFile,
                      status)
 from fastapi.param_functions import Depends
 from fastapi.responses import FileResponse, JSONResponse
 
 from app.queries import photo
 from app.auth.oauth2 import get_current_user
-from app.exceptions import ForbiddenException
+from app.exceptions import ForbiddenException, ProductFileNotFoundException
 from app.queries.customer import get_user_role
 from app.routers.delete import deletfilesproduct
 from app.routers.download import downloadfilesproduct
@@ -25,13 +25,9 @@ async def get_product_photo_by_name(product_id: int = Query(None, description='I
     folder_path = pathlib.Path(__file__).parent.resolve()
     # проверка на существование файла
     file_path = folder_path.joinpath(pathlib.Path(f"assets/{image_name}"))
-
+    # TODO: Добавить в Exception
     if not pathlib.Path.is_file(file_path):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Файл не найден',
-        )
-
+        raise ProductFileNotFoundException
     return FileResponse(file_path)
 
 
@@ -49,12 +45,10 @@ async def delete_product_photo(product_id: int = Query(None, description='Id п�
     if not role:
         raise ForbiddenException
     image_name = await photo.delete_photo_by_name(product_id, key)
+
     image_name = json.loads(image_name.replace("'", '"'))
     if not image_name:
-        raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail='Файл не существует',
-                )
+        raise ProductFileNotFoundException
     await deletfilesproduct(image_name)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Файл удален',
