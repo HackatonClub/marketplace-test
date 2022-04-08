@@ -36,7 +36,7 @@ create table if not exists tags_product
 (
     tag_id integer references tags (id) on delete cascade,
     product_id integer references product (id) on delete cascade,
-    tag_ids jsonb
+    unique (tag_id,product_id)
 );
 
 create table if not exists cart_product

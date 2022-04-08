@@ -109,12 +109,13 @@ async def search_products(tags: list, search_query: str, current_user: str ,prev
                 product_ids_tags = set(get_col_values(await DB.fetch(sql, tag_ids, len(tags)), 'id'))
             else:
                 product_ids_tags = set(await Redis.get_product_ids_by_tags(tag_ids))
-    if not product_ids_tags:
-        product_ids_tags = product_ids_search
-    product_ids = list(product_ids_search.intersection(product_ids_tags))
     previous_id = 0
-    if previous_ids:
+    if not tags and search_query:
+        product_ids_tags = product_ids_search
         previous_id = max(previous_ids)
+    if not search_query and tags:
+        product_ids_search = product_ids_tags
+    product_ids = list(product_ids_search.intersection(product_ids_tags))
     return await get_info_product(product_ids, current_user),previous_id
 
 

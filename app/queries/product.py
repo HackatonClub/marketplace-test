@@ -39,6 +39,7 @@ async def update_product(prod: ProductUp) -> None:
 async def get_info_product(product_id: list, login: str) -> list[Record]:
     customer_id = await get_customer_id(login)
     sql = """SELECT 
+                product.id,
                 product.name,
                 product.description,
                 product.price,
