@@ -87,11 +87,13 @@ async def get_tags_of_product(product_id: int = Path(..., title='ID продук
 @tags_router.get('/search/tag')
 async def get_products_by_tags(tags: List[str] = Query(None, title='Список тэгов'),
                                search_query: str = Query(None, title='Строка поиска'),
-                               current_user: str = Depends(get_current_user)) -> JSONResponse:
+                               current_user: str = Depends(get_current_user),
+                               previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)) -> JSONResponse:
     if not search_query:
         search_query = '' 
-    products = await tag_queries.search_products(tags, search_query, current_user)
+    products, previous_id = await tag_queries.search_products(tags, search_query, current_user,previous_id)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'products': products,
+        'previous_id': previous_id
     })

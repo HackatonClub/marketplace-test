@@ -79,14 +79,20 @@ async def get_tags_of_product_by_id(product_id: int, previous_id: int) -> list[R
     return await DB.fetch(sql, product_id, previous_id, ITEMS_PER_PAGE)
 
 
-async def search_products(tags: list, search_query: str, current_user: str) -> list[Record]:
-    prepared_query = prepare_search_query(search_query)
-    sql = """  SELECT id
-               FROM product
-               WHERE to_tsvector(description) @@ to_tsquery($1)
-               OR to_tsvector(name) @@ to_tsquery($1);"""
-    product_ids_search = set(get_col_values(await DB.fetch(sql, prepared_query), 'id'))
-    product_ids_tags = product_ids_search
+async def search_products(tags: list, search_query: str, current_user: str ,previous_id: int) -> (list[Record],int):
+    product_ids_search = set()
+    product_ids_tags = set()
+    previous_ids = [0]
+    if search_query:
+        prepared_query = prepare_search_query(search_query)
+        if len(prepared_query) <= 2:
+            raise BadRequest('Не конкретный запрос')
+        sql = """  SELECT id
+                   FROM product
+                   WHERE (to_tsvector(description) @@ to_tsquery($1)
+                   OR to_tsvector(name) @@ to_tsquery($1)) and id > $2;"""
+        previous_ids = get_col_values(await DB.fetch(sql, prepared_query,previous_id), 'id')
+        product_ids_search = set(previous_ids)
     if tags:
         tag_ids = await get_multiple_tag_ids(tags)
         if tag_ids:
@@ -105,8 +111,11 @@ async def search_products(tags: list, search_query: str, current_user: str) -> l
                 product_ids_tags = set(await Redis.get_product_ids_by_tags(tag_ids))
     if not product_ids_tags:
         product_ids_tags = product_ids_search
-    product_ids = product_ids_search.intersection(product_ids_tags)
-    return await get_info_product(product_ids, current_user)
+    product_ids = list(product_ids_search.intersection(product_ids_tags))
+    previous_id = 0
+    if previous_ids:
+        previous_id = max(previous_ids)
+    return await get_info_product(product_ids, current_user),previous_id
 
 
 async def get_tag_id(tag_name: str) -> int:

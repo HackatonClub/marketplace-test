@@ -36,7 +36,7 @@ async def update_product(prod: ProductUp) -> None:
         raise BadRequest('Такого продукта не существует')
 
 
-async def get_info_product(product_id: list, login: str) -> Record:
+async def get_info_product(product_id: list, login: str) -> list[Record]:
     customer_id = await get_customer_id(login)
     sql = """SELECT 
                 product.name,
