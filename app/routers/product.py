@@ -64,13 +64,6 @@ async def update_product(produ: ProductUp,  current_user: str = Depends(get_curr
     role = await get_user_role(current_user)
     if not role:
         raise ForbiddenException
-    print(produ.tag_id)
-    if produ.urls:
-        urls = await photo.get_name_photo_for_delete(produ.product_id)
-        urls = json.loads(urls.replace("'", '"'))
-        for image_name in urls.values():
-            await deletfilesproduct(image_name)
-
     await product.update_product(produ)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',

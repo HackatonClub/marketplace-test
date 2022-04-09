@@ -1,3 +1,5 @@
+import json
+
 from asyncpg import Record
 from app.db.db import DB
 from app.db.redis import Redis
@@ -6,6 +8,7 @@ from app.utils.extracter import prepare_search_query, get_col_values
 from app.exceptions import BadRequest, NotFoundException
 from app.settings import ITEMS_PER_PAGE
 
+# TODO: чекнуть везде ли REDIS независим
 
 async def add_new_tag(name: str) -> None:
     sql = """  INSERT INTO tags (name)
@@ -25,7 +28,7 @@ async def add_tag_to_product_by_id(tag_name: str, product_id: int) -> None:
     if not await DB.execute(sql, product_id, tag_id):
         raise BadRequest('Тэг уже присвоен или не существует такого продукта')
     await Redis.add_tag_to_product(tag_id, product_id)
-
+    await synchronize_tags_json(product_id)
 
 async def add_tags_to_product_by_id(tag_names: list[str], product_id: int) -> None:
     sql = '''  INSERT INTO tags (name)
@@ -40,6 +43,7 @@ async def add_tags_to_product_by_id(tag_names: list[str], product_id: int) -> No
     if not await DB.executemany(sql, tags_products):
         raise BadRequest('Тэг уже присвоен или не существует такого продукта')
     await Redis.add_tags_to_product(tag_ids, product_id)
+    await synchronize_tags_json(product_id)
 
 
 async def remove_tag_from_product_by_id(tag_name: str, product_id: int) -> None:
@@ -49,13 +53,17 @@ async def remove_tag_from_product_by_id(tag_name: str, product_id: int) -> None:
     if not await DB.execute(sql, product_id, tag_id):
         raise BadRequest('Тэг уже удалён')
     await Redis.remove_tag_from_product(tag_id, product_id)
+    await synchronize_tags_json(product_id)
 
 
 async def remove_tag(tag_name: str) -> None:
     tag_id = await get_tag_id(tag_name)
+    product_ids = await Redis.get_product_ids_by_tags([tag_id])
     sql = '''  DELETE FROM tags_product
                WHERE tag_id = $1'''
     await DB.execute(sql, tag_id)
+    for i in product_ids:
+        await synchronize_tags_json(i)
     sql = '''  DELETE FROM tags
                WHERE id = $1'''
     await DB.execute(sql, tag_id)
@@ -150,3 +158,17 @@ async def get_multiple_tag_ids(tag_names: list[str]) -> list[int]:
             found.append(int(i['id']))
             await Redis.set_hash(i['name'], i['id'])
     return found
+
+async def synchronize_tags_json(product_id: int) -> None:
+    sql = """  SELECT tags.name AS name
+               FROM tags_product
+               JOIN tags ON tags.id = tags_product.tag_id
+               WHERE tags_product.product_id = $1"""
+    tag_names = get_col_values(await DB.fetch(sql,product_id),'name')
+    product_tags = json.dumps({
+        'tags': tag_names
+    })
+    sql = """  UPDATE product
+               SET tag_id  = $1::jsonb
+               WHERE id = $2; """
+    await DB.execute(sql,product_tags,product_id)

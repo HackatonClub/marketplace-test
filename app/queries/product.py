@@ -27,12 +27,9 @@ async def update_product(prod: ProductUp) -> None:
     sql = '''  UPDATE product
                 SET name = coalesce($1, name),
                     description = coalesce($2, description),
-                    price = coalesce($3, price),
-                    url = coalesce( NULLIF($4, 'null' ::jsonb), url ),
-                    tag_id  = coalesce( NULLIF($5, 'null' :: jsonb), tag_id)
-                WHERE product.id =$6; '''
-    if not await DB.execute(sql, prod.name, prod.discription, prod.price,
-                            json.dumps(prod.urls), json.dumps(prod.tag_id), prod.product_id):
+                    price = coalesce($3, price)
+                WHERE product.id = $4; '''
+    if not await DB.execute(sql, prod.name, prod.discription, prod.price, prod.product_id):
         raise BadRequest('Такого продукта не существует')
 
 
