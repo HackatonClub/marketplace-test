@@ -36,7 +36,7 @@ async def get_all_name_photo(product_id: int) -> list[Record]:
                 FROM product
                 WHERE product.id = $1"""
 
-    photo_name = await DB.fetchrow(sql, product_id)
+    photo_name = await DB.fetch(sql, product_id)
     return photo_name
 
 
