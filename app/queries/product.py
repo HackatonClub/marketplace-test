@@ -50,7 +50,7 @@ async def get_info_product(product_id: list, login: str) -> list[Record]:
                     ELSE 'No'
                 END AS Love
             FROM product
-            FULL OUTER JOIN favourite ON favourite.customer_id = $2
+            LEFT JOIN favourite ON favourite.customer_id = $2
             AND favourite.product_id = product.id
             WHERE product.id= ANY($1::int[])"""
     return await DB.fetch(sql, product_id, customer_id)
