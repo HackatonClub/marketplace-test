@@ -1,7 +1,7 @@
 [MESSAGES CONTROL]
 disable=C0114,C0115,C0116,E0611,E1101,E0401
 
-ignore=*/models, apps.api.exceptions.py
+ignore=*/model.py, apps.api.exceptions.py
 
 [FORMAT]
 
