@@ -34,7 +34,7 @@ async def registration_user(request: OAuth2PasswordRequestForm = Depends()) -> d
 
 
 @registr_router.post("/login")
-async def login(request: OAuth2PasswordRequestForm = Depends()):
+async def login(request: OAuth2PasswordRequestForm = Depends()) -> dict:
     user = await registr.check_auth(request.username)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User doesnt exist')

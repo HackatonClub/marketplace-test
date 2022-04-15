@@ -7,7 +7,7 @@ from app.exceptions import BadRequest
 from app.queries.customer import get_customer_id
 
 
-async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict) -> None:
+async def add_product(name: str, description: str, price: int, tag_id: dict, urls: dict) -> int:
 
     sql = """  INSERT INTO product(name, description, price, avg_rating, num_reviews, url ,tag_id)
                 VALUES ($1,$2,$3,0,0, $4 ::jsonb, $5 ::jsonb)  returning id"""
@@ -27,15 +27,16 @@ async def update_product(prod: ProductUp) -> None:
     sql = '''  UPDATE product
                 SET name = coalesce($1, name),
                     description = coalesce($2, description),
-                    price = coalesce($3, price)
-                WHERE product.id = $4; '''
-    if not await DB.execute(sql, prod.name, prod.discription, prod.price, prod.product_id):
+                    price = coalesce($3, price),
+                    url = coalesce( NULLIF($4, 'null' ::jsonb), url )
+                WHERE product.id = $5; '''
+    if not await DB.execute(sql, prod.name, prod.discription, prod.price, json.dumps(prod.urls), prod.product_id):
         raise BadRequest('Такого продукта не существует')
 
 
 async def get_info_product(product_id: list, login: str) -> list[Record]:
     customer_id = await get_customer_id(login)
-    sql = """SELECT 
+    sql = """SELECT
                 product.id,
                 product.name,
                 product.description,

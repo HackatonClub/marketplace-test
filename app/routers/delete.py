@@ -4,9 +4,9 @@ from app.exceptions import ProductFileNotFoundException
 
 
 class DeleteeFile():
-    async def __call__(self, image_name: str):
+    async def __call__(self, image_name: str) -> None:
 
-        async def delete_file(image_name: str):
+        async def delete_file(image_name: str) -> None:
             folder_path = pathlib.Path(__file__).parent.resolve()
             file_path = folder_path.joinpath(pathlib.Path(f"assets/{image_name}"))
             if not pathlib.Path.is_file(file_path):

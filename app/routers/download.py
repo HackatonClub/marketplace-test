@@ -6,9 +6,9 @@ from fastapi import UploadFile
 
 
 class DownloadFiles():
-    async def __call__(self, upload_files: List[UploadFile]):
+    async def __call__(self, upload_files: List[UploadFile]) -> dict:
 
-        async def download_file(upload_files: List[UploadFile]):
+        async def download_file(upload_files: List[UploadFile]) -> dict:
             folder_path = pathlib.Path(__file__).parent.resolve()
             upload_path = folder_path.joinpath(pathlib.Path("assets"))
             i = 1
