@@ -90,7 +90,7 @@ async def get_products_by_tags(tags: List[str] = Query(None, title='Список
                                current_user: str = Depends(get_current_user),
                                previous_id: int = Query(0, title='Индекс последнего запроса', ge=0)) -> JSONResponse:
     if not search_query:
-        search_query = '' 
+        search_query = ''
     products, previous_id = await tag_queries.search_products(tags, search_query, current_user,previous_id)
     products = format_records(products)
     return JSONResponse(status_code=status.HTTP_200_OK, content={

@@ -8,7 +8,7 @@ from app.model import TokenData
 from app.settings import ALGORITHM, SECRET_KEY
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -19,7 +19,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-def verify_token(token: str, credentails_exception):
+def verify_token(token: str, credentails_exception) -> str:
     try:
         playload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         login: str = playload.get("sub")

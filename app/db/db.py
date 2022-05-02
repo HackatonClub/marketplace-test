@@ -12,11 +12,6 @@ from app.settings import DATABASE_URL
 logger = logging.getLogger(__name__)
 
 
-# TODO: add_tag_to_product_by_id возможно можно быстрее сделать, а также сделать проверку на то, существует ли продукт
-# TODO: add_favourite в один запрос сделать, а также добавить проверку на неверного покупателя
-# TODO: колда будевт функция добавить отзыв, не забыть добавить динамику в вычислении среднего рейтинга
-#           и колва отзывов в продукт
-
 
 class DB:
     con: asyncpg.connection.Connection = None

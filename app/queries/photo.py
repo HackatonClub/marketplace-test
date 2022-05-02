@@ -3,26 +3,6 @@ from asyncpg import Record
 from app.db.db import DB
 
 
-# async def check_product(product_id: int) -> bool:
-
-#     sql = f""" SELECT id
-#                FROM product
-#                WHERE id = {product_id}"""
-
-#     try:
-
-#         prod_id = await DB.fetchrow(sql)
-
-#         if not prod_id:
-#             return True
-
-#         return False
-
-#     except Exception as error:
-#         print(error)
-#         return False
-
-
 async def add_photo(product_id: int, url: dict) -> None:
 
     sql = """  INSERT INTO product_photo (product_id, url)
@@ -36,7 +16,7 @@ async def get_all_name_photo(product_id: int) -> list[Record]:
                 FROM product
                 WHERE product.id = $1"""
 
-    photo_name = await DB.fetchrow(sql, product_id)
+    photo_name = await DB.fetch(sql, product_id)
     return photo_name
 
 

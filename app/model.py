@@ -48,6 +48,7 @@ class ProductUp(BaseModel):
     name: str = Field(None, title='Название продукта')
     discription: str = Field(None, title='Описание продукта')
     price: int = Field(None, title='Цена продукта', gt=0)
+    urls: dict = Field(None, title='photoid : image_name')
 
 
 class Review(BaseModel):
