@@ -3,24 +3,24 @@ from asyncpg import Record
 from app.db.db import DB
 
 
-async def check_product(product_id: int) -> bool:
+# async def check_product(product_id: int) -> bool:
 
-    sql = f""" SELECT id
-               FROM product
-               WHERE id = {product_id}"""
+#     sql = f""" SELECT id
+#                FROM product
+#                WHERE id = {product_id}"""
 
-    try:
+#     try:
 
-        prod_id = await DB.fetchrow(sql)
+#         prod_id = await DB.fetchrow(sql)
 
-        if not prod_id:
-            return True
+#         if not prod_id:
+#             return True
 
-        return False
+#         return False
 
-    except Exception as error:
-        print(error)
-        return False
+#     except Exception as error:
+#         print(error)
+#         return False
 
 
 async def add_photo(product_id: int, url: dict) -> None:

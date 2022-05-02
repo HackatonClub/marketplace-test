@@ -14,11 +14,11 @@ from app.routers.product import product_router
 from app.routers.registr import registr_router
 from app.routers.review import review_router
 from app.routers.tag import tags_router
-
+from starlette.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 
-
+origins = ["*"]
 app = FastAPI(title='Marketplace')
 
 
@@ -58,3 +58,10 @@ app.include_router(favourite_router)
 app.include_router(photo_router)
 app.include_router(product_router)
 app.include_router(review_router)
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+)
