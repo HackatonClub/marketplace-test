@@ -87,7 +87,7 @@ async def get_tags_of_product_by_id(product_id: int, previous_id: int) -> list[R
     return await DB.fetch(sql, product_id, previous_id, ITEMS_PER_PAGE)
 
 
-async def search_products(tags: list, search_query: str, current_user: str ,previous_id: int) -> (list[Record],int):
+async def search_products(tags: list, search_query: str, current_user: str ,previous_id: int) -> (list[Record], int):
     product_ids_search = set()
     product_ids_tags = set()
     previous_ids = [0]
