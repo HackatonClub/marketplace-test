@@ -42,6 +42,8 @@ async def get_cart_products(customer_name: str, previous_id: int) -> list[Record
         raise CustomerNotFoundException
     sql = """  SELECT p.id AS product_id,
                       p.name,
+                      p.price,
+                      p.url,
                       cart_product.product_num,
                       cart_product.id AS previous_id
                FROM cart_product
