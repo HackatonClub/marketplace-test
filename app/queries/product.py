@@ -48,9 +48,15 @@ async def get_info_product(product_id: list, login: str) -> list[Record]:
                 CASE
                     WHEN favourite.product_id = product.id THEN 'Yes'
                     ELSE 'No'
-                END AS Love
+                END AS Love,
+                CASE
+                    WHEN cart_product.product_id = product.id THEN 'Yes'
+                    ELSE 'No'
+                END as Buy
             FROM product
             LEFT JOIN favourite ON favourite.customer_id = $2
             AND favourite.product_id = product.id
+            LEFT JOIN cart_product on cart_product.customer_id = $2
+            And cart_product.product_id = product.id
             WHERE product.id= ANY($1::int[])"""
     return await DB.fetch(sql, product_id, customer_id)
