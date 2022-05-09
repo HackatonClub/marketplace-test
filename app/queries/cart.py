@@ -44,10 +44,17 @@ async def get_cart_products(customer_name: str, previous_id: int) -> list[Record
                       p.name,
                       p.price,
                       p.url,
+                      CASE
+                        WHEN favourite.product_id = p.id THEN 'Yes'
+                        ELSE 'No'
+                      END AS Love,
                       cart_product.product_num,
                       cart_product.id AS previous_id
                FROM cart_product
                JOIN product p ON p.id = cart_product.product_id
-               WHERE customer_id = $1 AND cart_product.id > $2
+               AND customer_id = $1
+               LEFT JOIN favourite ON favourite.customer_id = $1
+                AND favourite.product_id = p.id
+               WHERE  cart_product.id > $2
                LIMIT $3;"""
     return await DB.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)
