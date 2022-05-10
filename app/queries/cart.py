@@ -32,8 +32,8 @@ async def delete_product_from_cart(customer_name: str, product_id: int) -> None:
         raise CustomerNotFoundException
     sql = '''  DELETE FROM cart_product
                WHERE product_id = $1 AND customer_id = $2;'''
-    if not await DB.execute(sql, product_id, customer_id):
-        raise BadRequest('Уже удален из корзины')
+    await DB.execute(sql, product_id, customer_id)
+    
 
 
 async def get_cart_products(customer_name: str, previous_id: int) -> list[Record]:

@@ -28,12 +28,8 @@ async def update_product_in_cart(cart: Cart, current_user: str = Depends(get_cur
 
 
 @cart_router.delete('/customer/cart')
-async def delete_favourite(cart: CartDelete, current_user: str = Depends(get_current_user)) -> JSONResponse:
-    if not await cart_queries.delete_product_from_cart(current_user, cart.product_id):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Уже удален из корзины',
-        )
+async def delete_cart_pr(cart: CartDelete, current_user: str = Depends(get_current_user)) -> JSONResponse:
+    await cart_queries.delete_product_from_cart(current_user, cart.product_id)     
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Executed',
     })
