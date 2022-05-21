@@ -21,7 +21,7 @@ services:
       - POSTGRES_NAME=marketplace
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - DATABASE_URL=postgresql://postgres:postgres@db:6432/study_bot
+      - DATABASE_URL=postgresql://postgres:postgres@db:6432/marketplace
     depends_on:
       - db
     network_mode: host
