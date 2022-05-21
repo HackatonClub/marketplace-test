@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - 8000:8000
+    network_mode: host
+    environment:
+      - POSTGRES_DB=marketplace
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    volumes:
+      - .:/code
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_NAME=marketplace
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketplace
+    depends_on:
+      - db
+    network_mode: host
+    
