@@ -12,7 +12,7 @@ async def add_favourite(name: str, product_id: int) -> None:
         raise CustomerNotFoundException
     sql = """  INSERT INTO favourite(customer_id, product_id)
                VALUES ($1,$2)"""
-    if not await DB.execute(sql, customer_id, product_id):
+    if not await DB.con.execute(sql, customer_id, product_id):
         raise BadRequest('Продукт уже добавлен в избранное')
 
 
@@ -22,7 +22,7 @@ async def remove_favourite(customer_name: str, product_id: int) -> None:
                (SELECT id
                  FROM users
                  WHERE name = $2)'''
-    if not await DB.execute(sql, product_id, customer_name):
+    if not await DB.con.execute(sql, product_id, customer_name):
         raise BadRequest('Уже удален из избранного')
 
 
@@ -34,4 +34,4 @@ async def get_favourites(customer_name: str, previous_id: int) -> list[Record]:
                FROM favourite
                WHERE customer_id = $1 AND id > $2
                LIMIT $3;'''
-    return await DB.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)
+    return await DB.con.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)

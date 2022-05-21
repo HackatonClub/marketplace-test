@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 
 from app.db.db import DB
 from app.db.redis import Redis
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import RequestValidationError
 from app.exceptions import (CommonException, InternalServerError)
 from app.routers.cart import cart_router
 from app.routers.customer import customer_router
@@ -15,7 +17,7 @@ from app.routers.registr import registr_router
 from app.routers.review import review_router
 from app.routers.tag import tags_router
 from starlette.middleware.cors import CORSMiddleware
-
+import time
 logger = logging.getLogger(__name__)
 
 origins = ["*"]
@@ -33,6 +35,43 @@ async def startup() -> None:
 async def shutdown() -> None:
     await DB.disconnect_db()
     await Redis.disconnect_redis()
+
+@app.middleware("http")
+async def log_requst(request: Request, call_next):
+    start_time = time.perf_counter()
+    response = await call_next(request)
+    process_time = (time.perf_counter() - start_time)
+    formatted_process_time = '{0:.5f}'.format(process_time)
+    logger.info(f"""***INFO*** Date time: {time.ctime()}  path={request.url.path} Method {request.method}
+                Completed_in = {formatted_process_time}s""")
+    return response
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception(request, exc):
+    logger.error(f"***ERROR*** Status code {exc.status_code} Message: {exc.detail}")
+    return JSONResponse(
+        content={"detail": exc.detail},
+        status_code=exc.status_code,
+    )
+
+
+@app.exception_handler(Exception)
+async def common_exception_handler(request: Request, exception: Exception):
+    error = InternalServerError(debug=str(exception))
+    logger.error(f"***ERROR*** Status code {error.status_code} Message: {error.message}")
+    return JSONResponse(
+        status_code=error.status_code,
+        content=error.to_json()
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(f"***ERROR*** Status code 422 Message: {str(exc)}")
+    return JSONResponse(
+        status_code=422,
+        content={'details': exc.errors()}
+    )
 
 
 @app.exception_handler(CommonException)
