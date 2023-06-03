@@ -30,8 +30,5 @@ async def get_favourites(customer_name: str, previous_id: int) -> list[Record]:
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
-    sql = '''  SELECT product_id,id AS previous_id
-               FROM favourite
-               WHERE customer_id = $1 AND id > $2
-               LIMIT $3;'''
+    sql = '''  select * from get_favorites_u($1,$2,$3)'''
     return await DB.con.fetch(sql, customer_id, previous_id, ITEMS_PER_PAGE)

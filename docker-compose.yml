@@ -5,8 +5,7 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     ports:
-      - 6432:6432
-    network_mode: host
+      - 6432:5432
     environment:
       - POSTGRES_DB=marketplace
       - POSTGRES_USER=postgres

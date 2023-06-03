@@ -19,9 +19,9 @@ async def registration_user(request: OAuth2PasswordRequestForm = Depends()) -> d
     if user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="User with this login exists")
-    if len(request.password) < 6 or request.password.isdigit():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Bad password, password shoud be better :)")
+    # if len(request.password) < 6 or request.password.isdigit():
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+    #                         detail="Bad password, password shoud be better :)")
     request.password = get_password_hash(request.password)
     userreg = User(login=request.username, password=request.password)
     await registr.create_user(userreg)

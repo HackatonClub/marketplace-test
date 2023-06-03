@@ -52,3 +52,8 @@ class BadRequest(CommonException):
 class ForbiddenException(CommonException):
     def __init__(self) -> None:
         super().__init__(status.HTTP_403_FORBIDDEN, "Forbidden")
+        
+
+class ReviewException(CommonException):
+    def __init__(self) -> None:
+        super().__init__(status.HTTP_400_BAD_REQUEST, "U have review")

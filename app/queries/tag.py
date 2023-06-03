@@ -40,8 +40,8 @@ async def add_tags_to_product_by_id(tag_names: list[str], product_id: int) -> No
     tags_products = [(product_id, x) for x in tag_ids]
     sql = '''  INSERT INTO tags_product(product_id, tag_id)
                VALUES ($1,$2);'''
-    if not await DB.con.executemany(sql, tags_products):
-        raise BadRequest('Тэг уже присвоен или не существует такого продукта')
+    # if not await DB.con.executemany(sql, tags_products):
+    #     raise BadRequest('Тэг уже присвоен или не существует такого продукта')
     await Redis.add_tags_to_product(tag_ids, product_id)
     await synchronize_tags_json(product_id)
 

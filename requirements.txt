@@ -1,9 +1,8 @@
 ﻿aiofiles==0.8.0
-aioredis==2.0.1
+redis==4.5.4
 anyio==3.5.0
 asgiref==3.5.0
 astroid==2.9.3
-asyncpg==0.25.0
 attrs==21.4.0
 bcrypt==3.2.0
 black==22.1.0
@@ -25,7 +24,6 @@ passlib==1.7.4
 pathspec==0.9.0
 pep8-naming==0.12.1
 platformdirs==2.5.1
-psycopg2-binary==2.9.3
 pyasn1==0.4.8
 pycodestyle==2.8.0
 pycparser==2.21

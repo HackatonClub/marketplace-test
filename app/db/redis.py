@@ -1,6 +1,6 @@
 import logging
 
-import aioredis
+import redis.asyncio as redis
 
 from app.db.db import DB
 from app.settings import HASH_EXPIRE,REDIS_PORT,REDIS_PASSWORD,REDIS_HOSTNAME
@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 class Redis:
 
-    con: aioredis.Redis = None
+    con: redis.Redis = None
     @classmethod
     async def connect_redis(cls) -> None:
         cls.con = None
         try:
-            cls.con = aioredis.from_url(
-                f'redis://:{REDIS_PASSWORD}@{REDIS_HOSTNAME}:{REDIS_PORT}',
+            cls.con = redis.from_url(
+                f'redis://{REDIS_HOSTNAME}:{REDIS_PORT}',
                 encoding="utf-8", decode_responses=True)
         except Exception as error:
             logger.error(error)
@@ -31,7 +31,7 @@ class Redis:
         if not cls.con:
             return
         sql = 'select product_id,tag_id from tags_product'
-        tags_product = await DB.fetch(sql)
+        tags_product = await DB.con.fetch(sql)
         await cls.con.flushall()
         for link in tags_product:
             await cls.con.sadd(link['tag_id'],link['product_id'])

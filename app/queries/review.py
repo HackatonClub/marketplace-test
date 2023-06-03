@@ -2,7 +2,7 @@ from asyncpg import Record
 
 from app.db.db import DB
 from app.exceptions import (BadRequest, CustomerNotFoundException,
-                            NotFoundException)
+                            NotFoundException,ReviewException)
 from app.queries.customer import get_customer_id
 from app.settings import ITEMS_PER_PAGE
 
@@ -11,9 +11,12 @@ async def add_review_to_product(customer_name: str, product_id: int, body: str, 
     customer_id = await get_customer_id(customer_name)
     if not customer_id:
         raise CustomerNotFoundException
-    sql = """  INSERT INTO review(product_id, customer_id, body, rating)
-               VALUES ($1,$2,$3,$4)"""
-    await DB.con.execute(sql, product_id, customer_id, body, rating)
+    try:
+        sql = """  INSERT INTO review(product_id, customer_id, body, rating)
+                VALUES ($1,$2,$3,$4)"""
+        await DB.con.execute(sql, product_id, customer_id, body, rating)
+    except(Exception):
+        raise ReviewException
     await update_product_dynamic_data(product_id)
 
 
@@ -44,7 +47,7 @@ async def update_product_dynamic_data(product_id: int) -> None:
     sql = """  SELECT sum(rating),count(customer_id)
                FROM review
                WHERE product_id = $1"""
-    temp = await DB.fetchrow(sql, product_id)
+    temp = await DB.con.fetchrow(sql, product_id)
     if temp['sum'] is None:
         temp = {'sum': 0, 'count': 1}
     sql = """  UPDATE product

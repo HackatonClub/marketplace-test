@@ -12,7 +12,7 @@ review_router = APIRouter(tags=["Review"])
 
 
 @review_router.post('/review')
-async def add_product_to_cart(review: Review, current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def add_review(review: Review, current_user: str = Depends(get_current_user)) -> JSONResponse:
     await review_queries.add_review_to_product(current_user, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -20,7 +20,7 @@ async def add_product_to_cart(review: Review, current_user: str = Depends(get_cu
 
 
 @review_router.put('/review')
-async def update_product_in_cart(review: Review, current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def update_rewie(review: Review, current_user: str = Depends(get_current_user)) -> JSONResponse:
     await review_queries.update_review_to_product(current_user, review.product_id, review.body, review.rating)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={
         'details': 'Executed',
@@ -28,7 +28,7 @@ async def update_product_in_cart(review: Review, current_user: str = Depends(get
 
 
 @review_router.delete('/review')
-async def delete_favourite(product: Product, current_user: str = Depends(get_current_user)) -> JSONResponse:
+async def delete_review(product: Product, current_user: str = Depends(get_current_user)) -> JSONResponse:
     await review_queries.delete_review_from_product(current_user, product.product_id)
     return JSONResponse(status_code=status.HTTP_200_OK, content={
         'details': 'Executed',
