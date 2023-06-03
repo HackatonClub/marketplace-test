@@ -1,8 +1,9 @@
-﻿aiofiles==0.8.0
-redis==4.5.4
+aiofiles==0.8.0
 anyio==3.5.0
 asgiref==3.5.0
 astroid==2.9.3
+async-timeout==4.0.2
+asyncpg==0.27.0
 attrs==21.4.0
 bcrypt==3.2.0
 black==22.1.0
@@ -12,6 +13,7 @@ colorama==0.4.4
 ecdsa==0.17.0
 fastapi==0.75.0
 flake8==4.0.1
+flake8-polyfill==1.0.2
 h11==0.13.0
 idna==3.3
 isort==5.10.1
@@ -27,7 +29,7 @@ platformdirs==2.5.1
 pyasn1==0.4.8
 pycodestyle==2.8.0
 pycparser==2.21
-pydantic==1.9.0
+pydantic==1.10.8
 pyflakes==2.4.0
 PyJWT==1.7.1
 pylint==2.12.2
@@ -35,12 +37,13 @@ python-decouple==3.3
 python-dotenv==0.19.2
 python-jose==3.3.0
 python-multipart==0.0.5
+redis==4.5.4
 rsa==4.8
 six==1.16.0
 sniffio==1.2.0
 starlette==0.17.1
 toml==0.10.2
 tomli==2.0.1
-typing_extensions==4.1.1
+typing_extensions==4.6.2
 uvicorn==0.17.5
 wrapt==1.13.3
